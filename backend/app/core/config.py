@@ -15,3 +15,8 @@ class Config:
     POSTGRES_DB: str = os.getenv("POSTGRES_LEADS_DB", Constants.DEFAULT_POSTGRES_DB)
 
     POSTGRES_URL: str = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+    GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY")
+    GEMINI_PROVIDER: str = os.getenv("GEMINI_PROVIDER")
+    GEMINI_FAST_MODEL: str = os.getenv("GEMINI_FAST_MODEL")
+    GEMINI_SMART_MODEL: str = os.getenv("GEMINI_SMART_MODEL")
