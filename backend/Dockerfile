@@ -2,7 +2,7 @@
 FROM python:3.14-slim AS base
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-WORKDIR /server
+WORKDIR /backend
 
 
 FROM base AS python-deps
