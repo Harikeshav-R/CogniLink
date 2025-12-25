@@ -44,6 +44,7 @@ class State(BaseModel):
     timestamp: float
 
     # Internal
+    _should_analyze: bool = False
     _static_analysis: Optional[StaticAnalysis] = None
     _diff_analysis: Optional[DiffAnalysis] = None
 
