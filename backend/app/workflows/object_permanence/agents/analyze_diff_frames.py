@@ -5,21 +5,23 @@ from langchain.agents.structured_output import ProviderStrategy
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import SystemMessage, HumanMessage, TextContentBlock, ImageContentBlock
 
+from app.core.config import Config
 from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import State, DiffAnalysis
 
 
-def analyze_diff_frames(state: State):
+def analyze_diff_frames(state: State) -> dict:
     if state.previous_frame is None or state.current_frame is None:
         return {}
 
     model = init_chat_model(
-        model="gemma-3-27b-it",
-        model_provider="google_genai"
+        model=Config.GEMINI_FAST_MODEL,
+        model_provider=Config.GEMINI_PROVIDER,
+        api_key=Config.GEMINI_API_KEY
     )
     agent = create_agent(
         model=model,
-        response_format=ProviderStrategy(DiffAnalysis),
+        response_format=DiffAnalysis,
         system_prompt=SystemMessage(
             content=Prompts.ANALYZE_DIFF_FRAMES
         ),
