@@ -8,5 +8,6 @@ dependencies = [
     "fastapi[standard]>=0.127.0",
     "langchain>=1.2.0",
     "langgraph>=1.0.5",
+    "psycopg2-binary>=2.9.11",
     "sqlmodel>=0.0.29",
 ]
