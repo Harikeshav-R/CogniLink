@@ -1,4 +1,4 @@
-from app.tools.compare_images import compare_images
+from app.workflows.object_permanence.tools import compare_images
 from app.workflows.object_permanence.state import State
 
 
