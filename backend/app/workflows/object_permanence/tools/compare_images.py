@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from PIL import Image
 from langchain.tools import tool
+from loguru import logger
 from skimage.metrics import structural_similarity as ssim
 
 
@@ -23,26 +24,31 @@ def compare_images(frame1: Image.Image, frame2: Image.Image, threshold: float = 
     :return: True if the images are significantly different; False otherwise.
     :rtype: bool
     """
+    logger.trace("Entering compare_images function")
+    logger.debug(f"Comparison threshold: {threshold}")
+
     # 1. Convert PIL Images to NumPy arrays (RGB)
+    logger.debug("Converting PIL Images to NumPy arrays")
     img1_np = np.array(frame1)
     img2_np = np.array(frame2)
 
     # 2. Convert to Grayscale (SSIM works best on structure, color is noise)
-    # Note: PIL uses RGB, OpenCV default is BGR, but since we convert both identical ways,
-    # generic RGB2GRAY works fine for structure comparison.
+    logger.debug("Converting images to grayscale")
     gray1 = cv2.cvtColor(img1_np, cv2.COLOR_RGB2GRAY)
     gray2 = cv2.cvtColor(img2_np, cv2.COLOR_RGB2GRAY)
 
     # 3. Resize for Performance (Critical Optimization)
-    # comparing 4k images is slow; 256x256 is enough for "Did something move?"
+    logger.debug("Resizing images to 256x256 for performance")
     gray1 = cv2.resize(gray1, (256, 256))
     gray2 = cv2.resize(gray2, (256, 256))
 
     # 4. Compute SSIM
-    # full=True is not strictly necessary here unless you want the diff map,
-    # setting it to False is slightly faster for just the score.
+    logger.debug("Computing Structural Similarity Index (SSIM)")
     score, _ = ssim(gray1, gray2, full=False)
+    logger.debug(f"SSIM score: {score}")
 
     # 5. Return Logic
-    # If score < threshold -> Return True (Yes, they are different)
-    return score < threshold
+    result = score < threshold
+    logger.debug(f"Images are {'different' if result else 'similar'}")
+    logger.trace("Exiting compare_images function")
+    return result
