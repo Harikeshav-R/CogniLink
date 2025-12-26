@@ -52,7 +52,6 @@ class State(BaseModel):
     # Inputs
     current_frame: Image.Image
     previous_frame: Optional[Image.Image] = None
-    timestamp: float
 
     # Internal
     db_session: Session
