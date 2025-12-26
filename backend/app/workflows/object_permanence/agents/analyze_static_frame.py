@@ -43,5 +43,5 @@ def analyze_static_frame(state: State) -> dict:
     )
 
     return {
-        "_static_analysis": result["structured_output"]
+        "static_analysis": result["structured_output"]
     }

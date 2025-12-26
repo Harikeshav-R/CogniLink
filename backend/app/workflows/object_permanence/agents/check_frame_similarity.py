@@ -7,5 +7,5 @@ def check_frame_similarity(state: State) -> dict:
         return {}
 
     return {
-        "_should_analyze": compare_images(state.previous_frame, state.current_frame)
+        "should_analyze": compare_images(state.previous_frame, state.current_frame)
     }

@@ -47,5 +47,5 @@ def analyze_diff_frames(state: State) -> dict:
     )
 
     return {
-        "_diff_analysis": result["structured_output"]
+        "diff_analysis": result["structured_output"]
     }

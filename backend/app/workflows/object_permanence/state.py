@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 
 from PIL import Image
 from pydantic import BaseModel, Field
@@ -37,6 +37,16 @@ class DiffAnalysis(BaseModel):
     events: list[Event] = Field(description="A list of detected events.", default_factory=list)
 
 
+class FilteredEntry(BaseModel):
+    content: str = Field(description="The natural language description of the log entry.")
+    object_name: str = Field(description="The name of the object to log.")
+    log_type: Literal["state", "action"] = Field(description="The type of log entry: state | action")
+
+
+class FilteredResults(BaseModel):
+    entries: list[FilteredEntry] = Field(description="A list of filtered entries.", default_factory=list)
+
+
 class State(BaseModel):
     # Inputs
     current_frame: Image.Image
@@ -44,9 +54,10 @@ class State(BaseModel):
     timestamp: float
 
     # Internal
-    _should_analyze: bool = False
-    _static_analysis: Optional[StaticAnalysis] = None
-    _diff_analysis: Optional[DiffAnalysis] = None
+    should_analyze: bool = False
+    static_analysis: Optional[StaticAnalysis] = None
+    diff_analysis: Optional[DiffAnalysis] = None
+    filtered_results: Optional[FilteredResults] = None
 
     # Outputs
     save_status: bool
