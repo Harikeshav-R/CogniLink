@@ -20,3 +20,5 @@ class Config:
     GEMINI_PROVIDER: str = os.getenv("GEMINI_PROVIDER")
     GEMINI_FAST_MODEL: str = os.getenv("GEMINI_FAST_MODEL")
     GEMINI_SMART_MODEL: str = os.getenv("GEMINI_SMART_MODEL")
+    GEMINI_VISION_MODEL: str = os.getenv("GEMINI_VISION_MODEL")
+    GEMINI_EMBEDDING_MODEL: str = os.getenv("GEMINI_EMBEDDING_MODEL")
