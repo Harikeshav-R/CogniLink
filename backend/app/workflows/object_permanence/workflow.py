@@ -40,7 +40,7 @@ def create_compiled_state_graph() -> CompiledStateGraph:
     logger.debug("Adding conditional edges from 'check_frame_similarity'")
     workflow.add_conditional_edges(
         "check_frame_similarity",
-        lambda state: ["analyze_static_frame", "analyze_diff_frames"] if state.get('should_analyze') else END,
+        lambda state: ["analyze_static_frame", "analyze_diff_frames"] if state.should_analyze else END,
     )
 
     logger.debug("Adding edges from 'analyze_static_frame' and 'analyze_diff_frames' to 'filter_results'")
