@@ -1,7 +1,7 @@
 from typing import Optional, Literal
 
 from PIL import Image
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from sqlmodel import Session
 
 
@@ -62,3 +62,6 @@ class State(BaseModel):
 
     # Outputs
     save_status: bool = False
+
+    # Config
+    model_config = ConfigDict(arbitrary_types_allowed=True)
