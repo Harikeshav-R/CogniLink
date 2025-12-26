@@ -1,4 +1,5 @@
 import base64
+import io
 
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
@@ -49,32 +50,47 @@ def analyze_diff_frames(state: State) -> dict:
     )
 
     logger.debug("Invoking agent for diff frames analysis")
-    prev_image_data = base64.b64encode(state.previous_frame.tobytes()).decode("utf-8")
-    curr_image_data = base64.b64encode(state.current_frame.tobytes()).decode("utf-8")
+
+    prev_image_bytes = io.BytesIO()
+    curr_image_bytes = io.BytesIO()
+    state.previous_frame.save(prev_image_bytes, format='PNG')
+    state.current_frame.save(curr_image_bytes, format='PNG')
+    prev_image_bytes.seek(0)
+    curr_image_bytes.seek(0)
+    prev_image_data = base64.b64encode(prev_image_bytes.getvalue()).decode("utf-8")
+    curr_image_data = base64.b64encode(curr_image_bytes.getvalue()).decode("utf-8")
+
     logger.debug(f"Previous image data length: {len(prev_image_data)}")
     logger.debug(f"Current image data length: {len(curr_image_data)}")
 
     result = agent.invoke(
-        HumanMessage(
-            content_blocks=[
-                TextContentBlock(
-                    type="text",
-                    text=Prompts.ANALYZE_DIFF_FRAMES
-                ),
-                ImageContentBlock(
-                    type="image",
-                    url=f"data:image/png;base64,{prev_image_data}"
-                ),
-                ImageContentBlock(
-                    type="image",
-                    url=f"data:image/png;base64,{curr_image_data}"
-                ),
+        {
+            "messages": [
+                HumanMessage(
+                    content=[
+                        {
+                            "type": "text",
+                            "text": Prompts.ANALYZE_STATIC_FRAME
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{prev_image_data}"
+                            }
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{curr_image_data}"
+                            }
+                        }
+                    ]
+                )
             ]
-        )
+        }
     )
-    logger.debug(f"Agent invocation result: {result}")
 
     logger.trace("Exiting analyze_diff_frames function")
     return {
-        "diff_analysis": result["structured_output"]
+        "diff_analysis": result["structured_response"]
     }

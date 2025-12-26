@@ -1,8 +1,9 @@
 import base64
+import io
 
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
-from langchain_core.messages import SystemMessage, HumanMessage, TextContentBlock, ImageContentBlock
+from langchain_core.messages import SystemMessage, HumanMessage
 from loguru import logger
 
 from app.core.config import Config
@@ -47,25 +48,35 @@ def analyze_static_frame(state: State) -> dict:
     )
 
     logger.debug("Invoking agent for static frame analysis")
-    image_data = base64.b64encode(state.current_frame.tobytes()).decode("utf-8")
+
+    image_bytes = io.BytesIO()
+    state.current_frame.save(image_bytes, format='PNG')
+    image_bytes.seek(0)
+    image_data = base64.b64encode(image_bytes.getvalue()).decode("utf-8")
+
     logger.debug(f"Image data length: {len(image_data)}")
     result = agent.invoke(
-        HumanMessage(
-            content_blocks=[
-                TextContentBlock(
-                    type="text",
-                    text=Prompts.ANALYZE_STATIC_FRAME
-                ),
-                ImageContentBlock(
-                    type="image",
-                    url=f"data:image/png;base64,{image_data}"
+        {
+            "messages": [
+                HumanMessage(
+                    content=[
+                        {
+                            "type": "text",
+                            "text": Prompts.ANALYZE_STATIC_FRAME
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/png;base64,{image_data}"
+                            }
+                        }
+                    ]
                 )
             ]
-        )
+        }
     )
-    logger.debug(f"Agent invocation result: {result}")
 
     logger.trace("Exiting analyze_static_frame function")
     return {
-        "static_analysis": result["structured_output"]
+        "static_analysis": result["structured_response"]
     }
