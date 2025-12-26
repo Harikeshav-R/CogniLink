@@ -44,7 +44,7 @@ def compare_images(frame1: Image.Image, frame2: Image.Image, threshold: float = 
 
     # 4. Compute SSIM
     logger.debug("Computing Structural Similarity Index (SSIM)")
-    score, _ = ssim(gray1, gray2, full=False)
+    score = ssim(gray1, gray2, full=False)
     logger.debug(f"SSIM score: {score}")
 
     # 5. Return Logic
