@@ -1,12 +1,10 @@
 import cv2
 import numpy as np
 from PIL import Image
-from langchain.tools import tool
 from loguru import logger
 from skimage.metrics import structural_similarity as ssim
 
 
-@tool
 def compare_images(frame1: Image.Image, frame2: Image.Image, threshold: float = 0.85) -> bool:
     """
     Compares two images to determine if they are significantly different, based on a
