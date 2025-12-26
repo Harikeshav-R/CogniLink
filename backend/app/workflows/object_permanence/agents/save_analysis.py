@@ -1,6 +1,7 @@
 import time
-from loguru import logger
+
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from loguru import logger
 
 from app.core.config import Config
 from app.crud.object_permanence import create_log_entry

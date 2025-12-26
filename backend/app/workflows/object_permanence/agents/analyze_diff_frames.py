@@ -1,8 +1,9 @@
 import base64
-from loguru import logger
+
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain_core.messages import SystemMessage, HumanMessage, TextContentBlock, ImageContentBlock
+from loguru import logger
 
 from app.core.config import Config
 from app.workflows.object_permanence.prompts import Prompts
