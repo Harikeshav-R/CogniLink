@@ -1,6 +1,6 @@
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
-from langchain_core.messages import SystemMessage, HumanMessage, TextContentBlock
+from langchain_core.messages import SystemMessage, HumanMessage
 from loguru import logger
 
 from app.core.config import Config
@@ -46,26 +46,30 @@ def filter_results(state: State) -> dict:
 
     logger.debug("Invoking agent to filter results")
     result = agent.invoke(
-        HumanMessage(
-            content_blocks=[
-                TextContentBlock(
-                    type="text",
-                    text=Prompts.FILTER_RESULTS
-                ),
-                TextContentBlock(
-                    type="text",
-                    text=str(state.static_analysis.model_dump())
-                ),
-                TextContentBlock(
-                    type="text",
-                    text=str(state.diff_analysis.model_dump())
+        {
+            "messages": [
+                HumanMessage(
+                    content=[
+                        {
+                            "type": "text",
+                            "text": Prompts.FILTER_RESULTS
+                        },
+                        {
+                            "type": "text",
+                            "text": str(state.static_analysis.model_dump())
+                        },
+                        {
+                            "type": "text",
+                            "text": str(state.diff_analysis.model_dump())
+                        }
+                    ]
                 )
             ]
-        )
+        }
     )
     logger.debug(f"Agent invocation result: {result}")
 
     logger.trace("Exiting filter_results function")
     return {
-        "filtered_results": result["structured_output"]
+        "filtered_results": result["structured_response"]
     }
