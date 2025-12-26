@@ -2,6 +2,7 @@ from typing import Optional, Literal
 
 from PIL import Image
 from pydantic import BaseModel, Field
+from sqlmodel import Session
 
 
 class Object(BaseModel):
@@ -54,10 +55,11 @@ class State(BaseModel):
     timestamp: float
 
     # Internal
+    db_session: Session
     should_analyze: bool = False
     static_analysis: Optional[StaticAnalysis] = None
     diff_analysis: Optional[DiffAnalysis] = None
     filtered_results: Optional[FilteredResults] = None
 
     # Outputs
-    save_status: bool
+    save_status: bool = False
