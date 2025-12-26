@@ -22,7 +22,12 @@ def check_frame_similarity(state: State) -> dict:
         return {}
 
     logger.debug("Comparing previous and current frames")
-    should_analyze = compare_images(state.previous_frame, state.current_frame)
+    should_analyze = compare_images.invoke(
+        {
+            "frame1": state.current_frame,
+            "frame2": state.previous_frame
+        }
+    )
     logger.debug(f"Comparison result: {should_analyze=}")
 
     logger.trace("Exiting check_frame_similarity function")
