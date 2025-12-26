@@ -11,6 +11,7 @@ def init_db() -> None:
     # 1. Enable the extension using a raw connection
     with Session(engine) as session:
         session.exec(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        session.commit()
 
     # 2. Create tables
     SQLModel.metadata.create_all(engine)
