@@ -1,28 +1,24 @@
 # Stage 1: Install GCC for numpy
-FROM python:3.14-slim AS build
+FROM python:3.14-slim AS base
 RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 
 # Stage 2: Base image with uv installer
-FROM build AS base
+FROM base AS uv-install
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /backend
-
-
-FROM base AS python-deps
-
-# Install uv.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 COPY pyproject.toml uv.lock ./
 
-# Install deps.
+
+# Stage 3: Install python dependencies
+from uv-install AS python-deps
 RUN uv sync --frozen --no-cache
 
 
+# Stage 4: Copy project sources
 FROM python-deps AS sources
-
-# Copy project sources
 COPY . .
 
 
