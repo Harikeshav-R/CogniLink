@@ -1,32 +1,33 @@
-# Stage 1: Install GCC for numpy
-FROM python:3.14-slim AS base
-RUN apt-get update && apt-get install -y --no-install-recommends build-essential
+# Stage 1: Base image with uv installer
+FROM python:3.13-slim AS base
 
-
-# Stage 2: Base image with uv installer
-FROM base AS uv-install
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 WORKDIR /backend
+
+# Copy uv from the official image (efficient and standard)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+
+# Stage 2: Install python dependencies
+FROM base AS python-deps
 COPY pyproject.toml uv.lock ./
 
-
-# Stage 3: Install python dependencies
-from uv-install AS python-deps
+# --frozen ensures we use the lockfile exactly
+# --no-cache keeps the image small
 RUN uv sync --frozen --no-cache
 
 
-# Stage 4: Copy project sources
+# Stage 3: Copy project sources
 FROM python-deps AS sources
 COPY . .
 
 
-# Stage 3: Development image
+# Stage 4: Development image
 FROM sources AS dev
-CMD ["uv", "run" ,"uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Using --reload for dev
 
 
-# Stage 4: Production image
+# Stage 5: Production image
 FROM sources AS prod
-CMD ["uv", "run" ,"uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
