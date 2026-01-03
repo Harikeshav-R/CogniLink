@@ -52,7 +52,7 @@ def save_analysis(state: State) -> dict:
             embedding,
             current_time,
             entry.object_name,
-            log_type=entry.log_type
+            entry.log_type
         )
 
     logger.debug("Save analysis complete")
