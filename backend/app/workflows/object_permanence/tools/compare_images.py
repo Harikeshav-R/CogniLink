@@ -25,22 +25,19 @@ def compare_images(frame1: Image.Image, frame2: Image.Image, threshold: float = 
     logger.trace("Entering compare_images function")
     logger.debug(f"Comparison threshold: {threshold}")
 
-    # 1. Convert PIL Images to NumPy arrays (RGB)
-    logger.debug("Converting PIL Images to NumPy arrays")
-    img1_np = np.array(frame1)
-    img2_np = np.array(frame2)
+    # 1. Convert PIL images to grayscale NumPy arrays
+    logger.debug("Converting PIL images to grayscale and then to NumPy arrays")
+    gray1_pil = frame1.convert('L')
+    gray2_pil = frame2.convert('L')
+    gray1 = np.array(gray1_pil)
+    gray2 = np.array(gray2_pil)
 
-    # 2. Convert to Grayscale (SSIM works best on structure, color is noise)
-    logger.debug("Converting images to grayscale")
-    gray1 = cv2.cvtColor(img1_np, cv2.COLOR_RGB2GRAY)
-    gray2 = cv2.cvtColor(img2_np, cv2.COLOR_RGB2GRAY)
-
-    # 3. Resize for Performance (Critical Optimization)
+    # 2. Resize for Performance
     logger.debug("Resizing images to 256x256 for performance")
     gray1 = cv2.resize(gray1, (256, 256))
     gray2 = cv2.resize(gray2, (256, 256))
 
-    # 4. Compute SSIM
+    # 3. Compute SSIM
     logger.debug("Computing Structural Similarity Index (SSIM)")
     score = ssim(gray1, gray2, full=False)
     logger.debug(f"SSIM score: {score}")
@@ -49,4 +46,4 @@ def compare_images(frame1: Image.Image, frame2: Image.Image, threshold: float = 
     result = score < threshold
     logger.debug(f"Images are {'different' if result else 'similar'}")
     logger.trace("Exiting compare_images function")
-    return result
+    return bool(result)
