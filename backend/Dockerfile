@@ -25,7 +25,7 @@ COPY . .
 
 # Stage 4: Development image
 FROM sources AS dev
-# Using --reload for dev
+CMD ["uv", "run", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
 
 # Stage 5: Production image
