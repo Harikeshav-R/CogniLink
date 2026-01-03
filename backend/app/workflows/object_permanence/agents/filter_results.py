@@ -29,10 +29,16 @@ def filter_results(state: State) -> dict:
         return {}
 
     logger.debug("Initializing chat model")
+    # model = init_chat_model(
+    #     model=Config.GEMINI_FAST_MODEL,
+    #     model_provider=Config.GEMINI_PROVIDER,
+    #     api_key=Config.GEMINI_API_KEY
+    # )
     model = init_chat_model(
-        model=Config.GEMINI_FAST_MODEL,
-        model_provider=Config.GEMINI_PROVIDER,
-        api_key=Config.GEMINI_API_KEY
+        model=Config.POLLINATIONS_SMART_MODEL,
+        model_provider=Config.POLLINATIONS_PROVIDER,
+        api_key=Config.POLLINATIONS_API_KEY,
+        base_url=Config.POLLINATIONS_ENDPOINT
     )
 
     logger.debug("Creating agent for filtering results")
