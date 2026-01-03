@@ -8,32 +8,11 @@ from app.crud.object_permanence import create_log_entry
 from app.workflows.object_permanence.state import State
 
 
-def get_embeddings(text: str) -> list[float]:
-    """
-    Gets the embeddings for a given text using the specified embedding model and API key.
-
-    This function utilizes the Google Generative AI Embeddings model to generate a
-    vector representation for the input text. It requires proper configuration of the
-    Google API key to function correctly.
-
-    :param text: The input text for which embeddings need to be generated.
-    :type text: str
-    :return: A list of floating-point values representing the embedding of the input text.
-    :rtype: list[float]
-    """
-    logger.trace("Entering get_embeddings function")
-    logger.debug(f"Getting embeddings for text: '{text}'")
-    embeddings = GoogleGenerativeAIEmbeddings(model=Config.GEMINI_EMBEDDING_MODEL, google_api_key=Config.GEMINI_API_KEY)
-    vector = embeddings.embed_query(text)
-    logger.trace("Exiting get_embeddings function")
-    return vector
-
-
 def save_analysis(state: State) -> dict:
     """
     Processes the filtered results within a given state, computes embeddings for the
-    content, creates log entries in the database, and returns a status dictionary upon
-    completion.
+    content in batches, creates log entries in the database, and returns a status 
+    dictionary upon completion.
 
     :param state: The current state containing filtered results and database session
                   information.
@@ -50,16 +29,30 @@ def save_analysis(state: State) -> dict:
     current_time = time.time()
     logger.debug(f"Current time: {current_time}")
 
-    for entry in state.filtered_results.entries:
-        logger.debug(f"Processing entry: {entry.content}")
-        embedding = get_embeddings(entry.content)
+    # Extract all content strings to embed them in a single batch call
+    contents = [entry.content for entry in state.filtered_results.entries]
+    logger.debug(f"Extracted {len(contents)} content strings for embedding")
+
+    logger.debug(f"Batch embedding {len(contents)} entries")
+    embeddings_model = GoogleGenerativeAIEmbeddings(
+        model=Config.GEMINI_EMBEDDING_MODEL,
+        google_api_key=Config.GEMINI_API_KEY,
+        vertexai=False
+    )
+
+    # embed_documents handles batching internally
+    all_embeddings = embeddings_model.embed_documents(contents)
+
+    # Iterate through entries and their corresponding pre-computed embeddings
+    for entry, embedding in zip(state.filtered_results.entries, all_embeddings):
         logger.debug(f"Creating log entry for object: {entry.object_name}")
         create_log_entry(
             state.db_session,
             entry.content,
             embedding,
             current_time,
-            entry.object_name
+            entry.object_name,
+            log_type=entry.log_type
         )
 
     logger.debug("Save analysis complete")
