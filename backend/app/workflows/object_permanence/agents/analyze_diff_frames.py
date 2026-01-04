@@ -75,7 +75,7 @@ def analyze_diff_frames(state: State) -> dict:
                     content=[
                         {
                             "type": "text",
-                            "text": Prompts.ANALYZE_STATIC_FRAME
+                            "text": Prompts.ANALYZE_DIFF_FRAMES
                         },
                         {
                             "type": "image_url",
