@@ -98,14 +98,14 @@ def test_analyze_diff_frames_no_frames(mock_state):
 def test_filter_results_happy_path(mock_create_agent, mock_init_model, mock_state):
     mock_agent = MagicMock()
     mock_create_agent.return_value = mock_agent
-    mock_agent.invoke.return_value = {"structured_response": "filtered"}
+    mock_agent.invoke.return_value = {"structured_response": FilteredResults(entries=[FilteredEntry(content="Filtered Test", object_name="filtered_test", log_type="state")])}
 
     result = filter_results(mock_state)
 
     mock_init_model.assert_called_once()
     mock_create_agent.assert_called_once()
     mock_agent.invoke.assert_called_once()
-    assert result == {"filtered_results": "filtered"}
+    assert result == {"filtered_results": FilteredResults(entries=[FilteredEntry(content="Filtered Test", object_name="filtered_test", log_type="state")])}
 
 
 def test_filter_results_no_analysis(mock_state):

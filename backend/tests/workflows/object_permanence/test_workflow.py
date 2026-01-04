@@ -33,6 +33,7 @@ def test_graph_compilation(compiled_graph):
         "check_frame_similarity",
         "analyze_static_frame",
         "analyze_diff_frames",
+        "gather_analyses",
         "filter_results",
         "save_analysis",
         "__start__",
