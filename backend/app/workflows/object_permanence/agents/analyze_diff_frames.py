@@ -2,11 +2,11 @@ import base64
 import io
 
 from langchain.agents import create_agent
-from langchain.chat_models import init_chat_model
 from langchain_core.messages import SystemMessage, HumanMessage
 from loguru import logger
 
 from app.core.config import Config
+from app.core.model_factory import init_pollinations_chat_model
 from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import State, DiffAnalysis
 
@@ -34,17 +34,15 @@ def analyze_diff_frames(state: State) -> dict:
         return {}
 
     logger.debug("Initializing chat model for diff frames analysis")
-    # model = init_chat_model(
-    #     model=Config.GEMINI_VISION_MODEL,
-    #     model_provider=Config.GEMINI_PROVIDER,
-    #     api_key=Config.GEMINI_API_KEY
+
+    # model = init_google_genai_chat_model(
+    #     Config.GEMINI_VISION_MODEL,
+    #     Config.GEMINI_API_KEY
     # )
 
-    model = init_chat_model(
-        model=Config.POLLINATIONS_VISION_MODEL,
-        model_provider=Config.POLLINATIONS_PROVIDER,
-        api_key=Config.POLLINATIONS_API_KEY,
-        base_url=Config.POLLINATIONS_ENDPOINT
+    model = init_pollinations_chat_model(
+        Config.POLLINATIONS_VISION_MODEL,
+        Config.POLLINATIONS_API_KEY
     )
 
     logger.debug("Creating agent for diff frames analysis")
