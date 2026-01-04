@@ -8,7 +8,7 @@ from app.crud.object_permanence import create_log_entry
 from app.workflows.object_permanence.state import State
 
 
-def save_analysis(state: State) -> dict:
+async def save_analysis(state: State) -> dict:
     """
     Processes the filtered results within a given state, computes embeddings for the
     content in batches, creates log entries in the database, and returns a status 
@@ -45,12 +45,12 @@ def save_analysis(state: State) -> dict:
     )
 
     # embed_documents handles batching internally
-    all_embeddings = embeddings_model.embed_documents(contents)
+    all_embeddings = await embeddings_model.aembed_documents(contents)
 
     # Iterate through entries and their corresponding pre-computed embeddings
     for entry, embedding in zip(state.filtered_results.entries, all_embeddings):
         logger.debug(f"Creating log entry for object: {entry.object_name}")
-        create_log_entry(
+        await create_log_entry(
             state.db_session,
             entry.content,
             embedding,

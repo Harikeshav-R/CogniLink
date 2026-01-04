@@ -1,11 +1,11 @@
 from loguru import logger
-from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.models.object_permanence import ObjectPermanence
 
 
-def create_log_entry(
-        db: Session,
+async def create_log_entry(
+        db: AsyncSession,
         content: str,
         embedding: list[float],
         timestamp: float,
@@ -19,7 +19,7 @@ def create_log_entry(
     latest state of the log entry is returned.
 
     :param db: The database session used to perform the operation.
-    :type db: Session
+    :type db: AsyncSession
     :param content: The textual information of the log entry.
     :type content: str
     :param embedding: A list of floating-point numbers representing the embedding
@@ -48,9 +48,9 @@ def create_log_entry(
     logger.debug("Log entry object created: {db_log}", db_log=db_log)
     db.add(db_log)
     logger.debug("Log entry added to the database session.")
-    db.commit()
+    await db.commit()
     logger.debug("Database session committed.")
-    db.refresh(db_log)
+    await db.refresh(db_log)
     logger.debug("Log entry refreshed from the database.")
 
     logger.info(f"Successfully created log entry for object: {object_name}")

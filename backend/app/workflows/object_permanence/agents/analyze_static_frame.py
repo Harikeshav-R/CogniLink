@@ -11,7 +11,7 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import State, StaticAnalysis
 
 
-def analyze_static_frame(state: State) -> dict:
+async def analyze_static_frame(state: State) -> dict:
     """
     Analyzes the static frame provided in the state and returns the result of the analysis.
     This function utilizes a configured chat model to process the static frame and produce
@@ -60,7 +60,7 @@ def analyze_static_frame(state: State) -> dict:
     image_data = base64.b64encode(image_bytes.getvalue()).decode("utf-8")
 
     logger.debug(f"Image data length: {len(image_data)}")
-    result = agent.invoke(
+    result = await agent.ainvoke(
         {
             "messages": [
                 HumanMessage(

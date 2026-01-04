@@ -3,7 +3,7 @@ from loguru import logger
 from app.workflows.object_permanence.state import State
 
 
-def gather_analyses(state: State) -> dict:
+async def gather_analyses(state: State) -> dict:
     """
     A simple node to gather results from parallel branches.
     This node doesn't perform any logic, but acts as a synchronization point in the graph.

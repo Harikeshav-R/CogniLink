@@ -4,7 +4,7 @@ from app.workflows.object_permanence.state import State
 from app.workflows.object_permanence.tools.compare_images import compare_images
 
 
-def check_frame_similarity(state: State) -> dict:
+async def check_frame_similarity(state: State) -> dict:
     """
     Analyze the similarity between the previous and current frames and determine if
     analysis should be conducted based on the comparison result.

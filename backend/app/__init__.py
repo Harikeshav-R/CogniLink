@@ -6,7 +6,8 @@ from PIL import Image
 from fastapi import FastAPI, Depends, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
-from sqlmodel import Session, select
+from sqlmodel import select
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.config import Config
 from app.core.db import get_session, init_db
@@ -19,7 +20,7 @@ async def lifespan(app: FastAPI):
     # On Startup
 
     # Setup the database
-    init_db()
+    await init_db()
 
     yield
 
@@ -42,18 +43,19 @@ if Config.DEBUG:
 
 
 @app.get("/")
-def root():
+async def root():
     return {"message": "Hello World"}
 
 
 @app.get("/api/db-version")
-def get_db_version(session: Session = Depends(get_session)):
+async def get_db_version(session: AsyncSession = Depends(get_session)):
     """
     Tests the database connection by retrieving the PostgreSQL version.
     """
     try:
-        result = session.exec(select(func.version())).first()
-        return {"db_version": result}
+        result = await session.exec(select(func.version()))
+        version = result.first()
+        return {"db_version": version}
 
     except Exception as e:
         return {"error": f"Database connection failed: {e}"}
@@ -61,7 +63,7 @@ def get_db_version(session: Session = Depends(get_session)):
 
 @app.post("/api/workflows/object-permanence")
 async def run_object_permanence_workflow(
-        session: Session = Depends(get_session),
+        session: AsyncSession = Depends(get_session),
         current_frame: UploadFile = File(...),
         previous_frame: Optional[UploadFile] = File(None),
 ):
@@ -94,7 +96,7 @@ async def run_object_permanence_workflow(
     graph = create_compiled_state_graph()
 
     # The graph.invoke will return the final state.
-    final_state = graph.invoke(initial_state)
+    final_state = await graph.ainvoke(initial_state)
 
     # The state contains non-serializable fields like images and db session.
     # We select the serializable fields to return.

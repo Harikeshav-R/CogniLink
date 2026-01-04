@@ -2,7 +2,7 @@ from typing import Optional, Literal
 
 from PIL import Image
 from pydantic import BaseModel, Field, ConfigDict
-from sqlmodel import Session
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 class Object(BaseModel):
@@ -54,7 +54,7 @@ class State(BaseModel):
     previous_frame: Optional[Image.Image] = None
 
     # Internal
-    db_session: Session
+    db_session: AsyncSession
     should_analyze: bool = False
     static_analysis: Optional[StaticAnalysis] = None
     diff_analysis: Optional[DiffAnalysis] = None

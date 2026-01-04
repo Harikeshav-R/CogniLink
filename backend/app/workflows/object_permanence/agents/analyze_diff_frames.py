@@ -11,7 +11,7 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import State, DiffAnalysis
 
 
-def analyze_diff_frames(state: State) -> dict:
+async def analyze_diff_frames(state: State) -> dict:
     """
     Analyzes the differences between two image frames provided in the state object.
 
@@ -68,7 +68,7 @@ def analyze_diff_frames(state: State) -> dict:
     logger.debug(f"Previous image data length: {len(prev_image_data)}")
     logger.debug(f"Current image data length: {len(curr_image_data)}")
 
-    result = agent.invoke(
+    result = await agent.ainvoke(
         {
             "messages": [
                 HumanMessage(

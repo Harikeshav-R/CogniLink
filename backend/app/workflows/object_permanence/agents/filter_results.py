@@ -8,7 +8,7 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import State, FilteredResults
 
 
-def filter_results(state: State) -> dict:
+async def filter_results(state: State) -> dict:
     """
     Filters results using static and differential analysis data from the given state. This
     function employs a chat model-based agent to generate filtered outputs based on the
@@ -63,7 +63,7 @@ def filter_results(state: State) -> dict:
     )
 
     logger.debug("Invoking agent to filter results")
-    result = agent.invoke(
+    result = await agent.ainvoke(
         {
             "messages": [
                 HumanMessage(
