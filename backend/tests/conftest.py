@@ -38,8 +38,8 @@ def dummy_video_path():
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
         video_path = tmp.name
 
-    # Use 'avc1' for broader compatibility, especially on macOS
-    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    # Use 'mp4v' for broader compatibility, especially in containerized environments
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(video_path, fourcc, float(fps), (width, height))
 
     if not out.isOpened():
