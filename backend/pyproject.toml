@@ -23,4 +23,5 @@ dependencies = [
 dev = [
     "pytest>=9.0.2",
     "pytest-asyncio>=0.23.7",
+    "pytest-mock>=3.12.0",
 ]
