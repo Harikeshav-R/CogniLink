@@ -15,8 +15,6 @@ dependencies = [
     "pgvector>=0.4.2",
     "pillow>=12.0.0",
     "psycopg[binary]>=3.3.2",
-    "scikit-image>=0.26.0",
-    "scikit-learn>=1.8.0",
     "sqlmodel>=0.0.29",
     "asyncpg>=0.29.0",
 ]
