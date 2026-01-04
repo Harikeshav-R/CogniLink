@@ -1,12 +1,10 @@
-from langgraph.graph import END, StateGraph
+from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
 from loguru import logger
 
-from app.workflows.object_permanence.agents.analyze_diff_frames import analyze_diff_frames
-from app.workflows.object_permanence.agents.analyze_static_frame import analyze_static_frame
-from app.workflows.object_permanence.agents.check_frame_similarity import check_frame_similarity
+from app.workflows.object_permanence.agents.analyze_frames import analyze_frames
+from app.workflows.object_permanence.agents.extract_frames import extract_frames
 from app.workflows.object_permanence.agents.filter_results import filter_results
-from app.workflows.object_permanence.agents.gather_analyses import gather_analyses
 from app.workflows.object_permanence.agents.save_analysis import save_analysis
 from app.workflows.object_permanence.state import State
 
@@ -29,28 +27,19 @@ def create_compiled_state_graph() -> CompiledStateGraph:
     workflow = StateGraph(State)
 
     logger.debug("Adding nodes to the graph")
-    workflow.add_node("check_frame_similarity", check_frame_similarity)
-    workflow.add_node("analyze_static_frame", analyze_static_frame)
-    workflow.add_node("analyze_diff_frames", analyze_diff_frames)
-    workflow.add_node("gather_analyses", gather_analyses)
+    workflow.add_node("extract_frames", extract_frames)
+    workflow.add_node("analyze_frames", analyze_frames)
     workflow.add_node("filter_results", filter_results)
     workflow.add_node("save_analysis", save_analysis)
 
-    logger.debug("Setting entry point to 'check_frame_similarity'")
-    workflow.set_entry_point("check_frame_similarity")
+    logger.debug("Setting entry point to 'extract_frames'")
+    workflow.set_entry_point("extract_frames")
 
-    logger.debug("Adding conditional edges from 'check_frame_similarity'")
-    workflow.add_conditional_edges(
-        "check_frame_similarity",
-        lambda state: ["analyze_static_frame", "analyze_diff_frames"] if state.should_analyze else END,
-    )
+    logger.debug("Adding edge from 'extract_frames' to 'analyze_frames'")
+    workflow.add_edge("extract_frames", "analyze_frames")
 
-    logger.debug("Adding edges from analysis branches to 'gather_analyses'")
-    workflow.add_edge("analyze_static_frame", "gather_analyses")
-    workflow.add_edge("analyze_diff_frames", "gather_analyses")
-
-    logger.debug("Adding edge from 'gather_analyses' to 'filter_results'")
-    workflow.add_edge("gather_analyses", "filter_results")
+    logger.debug("Adding edge from 'analyze_frames' to 'filter_results'")
+    workflow.add_edge("analyze_frames", "filter_results")
 
     logger.debug("Adding edge from 'filter_results' to 'save_analysis'")
     workflow.add_edge("filter_results", "save_analysis")
@@ -62,3 +51,4 @@ def create_compiled_state_graph() -> CompiledStateGraph:
     compiled_graph = workflow.compile()
     logger.trace("Exiting create_compiled_state_graph function")
     return compiled_graph
+

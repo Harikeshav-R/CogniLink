@@ -37,19 +37,22 @@ async def save_analysis(state: State) -> dict:
         logger.debug("No content to save, returning empty dict")
         return {}
 
-    logger.debug(f"Batch embedding {len(contents)} entries")
+    logger.debug("Initializing embedding model...")
     embeddings_model = GoogleGenerativeAIEmbeddings(
         model=Config.GEMINI_EMBEDDING_MODEL,
         google_api_key=Config.GEMINI_API_KEY,
         vertexai=False
     )
+    logger.debug("Embedding model initialized.")
 
+    logger.debug(f"Batch embedding {len(contents)} entries...")
     # embed_documents handles batching internally
     all_embeddings = await embeddings_model.aembed_documents(contents)
+    logger.debug("Batch embedding complete.")
 
     # Iterate through entries and their corresponding pre-computed embeddings
-    for entry, embedding in zip(state.filtered_results.entries, all_embeddings):
-        logger.debug(f"Creating log entry for object: {entry.object_name}")
+    for i, (entry, embedding) in enumerate(zip(state.filtered_results.entries, all_embeddings)):
+        logger.trace(f"Processing entry {i + 1}/{len(state.filtered_results.entries)}: {entry.object_name}")
         await create_log_entry(
             state.db_session,
             entry.content,

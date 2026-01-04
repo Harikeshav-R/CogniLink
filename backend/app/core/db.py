@@ -11,12 +11,10 @@ engine = create_async_engine(Config.POSTGRES_URL)
 
 async def init_db() -> None:
     async with engine.begin() as conn:
+        # Enable the pgvector extension
+        await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        # Now, create the tables
         await conn.run_sync(SQLModel.metadata.create_all)
-
-    # 1. Enable the extension using a raw connection
-    async with AsyncSession(engine) as session:
-        await session.exec(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        await session.commit()
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:

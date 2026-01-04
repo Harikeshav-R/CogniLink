@@ -1,4 +1,4 @@
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 
 from PIL import Image
 from pydantic import BaseModel, Field, ConfigDict
@@ -38,6 +38,11 @@ class DiffAnalysis(BaseModel):
     events: list[Event] = Field(description="A list of detected events.", default_factory=list)
 
 
+class VideoAnalysis(BaseModel):
+    static_analysis: StaticAnalysis
+    diff_analysis: DiffAnalysis
+
+
 class FilteredEntry(BaseModel):
     content: str = Field(description="The natural language description of the log entry.")
     object_name: str = Field(description="The name of the object to log.")
@@ -50,12 +55,11 @@ class FilteredResults(BaseModel):
 
 class State(BaseModel):
     # Inputs
-    current_frame: Image.Image
-    previous_frame: Optional[Image.Image] = None
+    video_path: str
+    frames: Optional[List[Image.Image]] = None
 
     # Internal
     db_session: AsyncSession
-    should_analyze: bool = False
     static_analysis: Optional[StaticAnalysis] = None
     diff_analysis: Optional[DiffAnalysis] = None
     filtered_results: Optional[FilteredResults] = None
@@ -65,3 +69,4 @@ class State(BaseModel):
 
     # Config
     model_config = ConfigDict(arbitrary_types_allowed=True)
+

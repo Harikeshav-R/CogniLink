@@ -1,8 +1,7 @@
-import io
+import os
+import tempfile
 from contextlib import asynccontextmanager
-from typing import Optional
 
-from PIL import Image
 from fastapi import FastAPI, Depends, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import func
@@ -64,46 +63,41 @@ async def get_db_version(session: AsyncSession = Depends(get_session)):
 @app.post("/api/workflows/object-permanence")
 async def run_object_permanence_workflow(
         session: AsyncSession = Depends(get_session),
-        current_frame: UploadFile = File(...),
-        previous_frame: Optional[UploadFile] = File(None),
+        video_clip: UploadFile = File(...),
 ):
     """
-    Runs the object permanence workflow.
+    Runs the object permanence workflow on a video clip.
 
-    This endpoint executes a LangGraph workflow to analyze images for object permanence.
-    The workflow can perform two main types of analysis:
-    1.  **Static Analysis**: Identifies objects in a single frame (`current_frame`).
-    2.  **Differential Analysis**: Compares `current_frame` with `previous_frame` to detect changes.
-
-    - If both `current_frame` and `previous_frame` are provided, the workflow will
-      compare them. If they are different enough, it will run both static and
-      differential analysis.
-    - If only `current_frame` is provided, the workflow as currently implemented
-      will not perform any analysis. For analysis to occur, both frames are required by the `check_frame_similarity` entrypoint.
+    This endpoint receives a video clip, saves it to a temporary file, and
+    triggers a LangGraph workflow. The workflow is responsible for extracting
+    frames, analyzing them for object permanence, and storing the results.
 
     The state of the workflow after execution is returned, excluding non-serializable
-    fields like images and the database session.
+    fields like the database session.
     """
-    current_frame_img = Image.open(io.BytesIO(await current_frame.read()))
-    current_frame_img.load()  # Force load the image data to prevent issues with lazy loading
-    previous_frame_img = None
-    if previous_frame:
-        previous_frame_img = Image.open(io.BytesIO(await previous_frame.read()))
-        previous_frame_img.load()  # Force load the image data
+    # Create a temporary file to store the video clip
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
+        content = await video_clip.read()
+        tmp.write(content)
+        video_path = tmp.name
 
-    initial_state = State(current_frame=current_frame_img, previous_frame=previous_frame_img, db_session=session)
+    try:
+        initial_state = State(video_path=video_path, db_session=session)
 
-    graph = create_compiled_state_graph()
+        graph = create_compiled_state_graph()
 
-    # The graph.invoke will return the final state.
-    final_state = await graph.ainvoke(initial_state)
+        # The graph.invoke will return the final state.
+        final_state = await graph.ainvoke(initial_state)
 
-    # The state contains non-serializable fields like images and db session.
-    # We select the serializable fields to return.
-    serializable_state = {
-        key: value
-        for key, value in final_state.items()
-        if key not in ["current_frame", "previous_frame", "db_session"]
-    }
+        # The state contains non-serializable fields.
+        # We select the serializable fields to return.
+        serializable_state = {
+            key: value
+            for key, value in final_state.items()
+            if key not in ["video_path", "frames", "db_session"]
+        }
 
-    return serializable_state
+        return serializable_state
+    finally:
+        # Clean up the temporary file
+        os.unlink(video_path)

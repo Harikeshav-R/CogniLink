@@ -33,15 +33,19 @@ async def filter_results(state: State) -> dict:
 
     # Filter out low-confidence objects and events before sending to the agent
     if state.static_analysis:
+        logger.debug(f"Filtering {len(state.static_analysis.objects)} objects.")
         state.static_analysis.objects = [
             obj for obj in state.static_analysis.objects if obj.confidence != "low"
         ]
+        logger.debug(f"Found {len(state.static_analysis.objects)} objects after filtering.")
     if state.diff_analysis:
+        logger.debug(f"Filtering {len(state.diff_analysis.events)} events.")
         state.diff_analysis.events = [
             event for event in state.diff_analysis.events if event.confidence != "low"
         ]
+        logger.debug(f"Found {len(state.diff_analysis.events)} events after filtering.")
 
-    logger.debug("Initializing chat model")
+    logger.debug("Initializing chat model for filtering...")
 
     # model = init_google_genai_chat_model(
     #     Config.GEMINI_VISION_MODEL,
@@ -52,8 +56,9 @@ async def filter_results(state: State) -> dict:
         Config.POLLINATIONS_SMART_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+    logger.debug("Chat model initialized.")
 
-    logger.debug("Creating agent for filtering results")
+    logger.debug("Creating agent for filtering results...")
     agent = create_agent(
         model=model,
         response_format=FilteredResults,
@@ -61,8 +66,9 @@ async def filter_results(state: State) -> dict:
             content=Prompts.FILTER_RESULTS
         ),
     )
+    logger.debug("Agent created.")
 
-    logger.debug("Invoking agent to filter results")
+    logger.debug("Invoking agent to filter results...")
     result = await agent.ainvoke(
         {
             "messages": [
@@ -85,7 +91,8 @@ async def filter_results(state: State) -> dict:
             ]
         }
     )
-    logger.debug(f"Agent invocation result: {result['structured_response'].model_dump_json(indent=2)}")
+    logger.debug("Agent invocation complete.")
+    logger.debug(f"Filtered results: {result['structured_response'].model_dump_json(indent=2)}")
 
     logger.trace("Exiting filter_results function")
     return {
