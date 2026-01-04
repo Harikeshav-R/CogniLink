@@ -28,6 +28,19 @@ def filter_results(state: State) -> dict:
         logger.debug("Static analysis or diff analysis is None, returning empty dict")
         return {}
 
+    logger.debug(f"Static analysis input: {state.static_analysis.model_dump_json(indent=2)}")
+    logger.debug(f"Diff analysis input: {state.diff_analysis.model_dump_json(indent=2)}")
+
+    # Filter out low-confidence objects and events before sending to the agent
+    if state.static_analysis:
+        state.static_analysis.objects = [
+            obj for obj in state.static_analysis.objects if obj.confidence != "low"
+        ]
+    if state.diff_analysis:
+        state.diff_analysis.events = [
+            event for event in state.diff_analysis.events if event.confidence != "low"
+        ]
+
     logger.debug("Initializing chat model")
 
     # model = init_google_genai_chat_model(
@@ -72,7 +85,7 @@ def filter_results(state: State) -> dict:
             ]
         }
     )
-    logger.debug(f"Agent invocation result: {result}")
+    logger.debug(f"Agent invocation result: {result['structured_response'].model_dump_json(indent=2)}")
 
     logger.trace("Exiting filter_results function")
     return {
