@@ -39,7 +39,7 @@ class Prompts:
         1. **Be Granular:** Do not say "items on table." Break them down: "Blue Pen", "Receipt", "iPhone".
         2. **Spatial Context:** If an object is "RESTING", the `location_description` MUST describe what it is sitting on/next to. This is crucial for retrieval.
         3. **Safety:** If no relevant objects are visible, return an empty "objects" list.
-        4. **Ambiguity:** If you cannot see the object clearly, mark confidence as "low".
+        4. **Ambiguity:** If an object is partially obscured or you are not certain, DO NOT GUESS. Mark confidence as "low".
         """
 
     ANALYZE_DIFF_FRAMES = \
@@ -60,7 +60,8 @@ class Prompts:
         3. **The "Hand" Rule:**
            - If an object moves from a *Hand* (Image A) to a *Surface* (Image B) -> Event is **"PLACED"**.
            - If an object moves from a *Surface* (Image A) to a *Hand* (Image B) -> Event is **"REMOVED"**.
-        
+        4. **Ambiguity:** If you cannot clearly determine the action or the object, mark confidence as "low". Do not invent actions.
+
         ### OUTPUT FORMAT (JSON ONLY)
         Return a valid JSON object. If no relevant objects changed state, return `{"events": []}`.
         
