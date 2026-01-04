@@ -33,6 +33,10 @@ def save_analysis(state: State) -> dict:
     contents = [entry.content for entry in state.filtered_results.entries]
     logger.debug(f"Extracted {len(contents)} content strings for embedding")
 
+    if not contents:
+        logger.debug("No content to save, returning empty dict")
+        return {}
+
     logger.debug(f"Batch embedding {len(contents)} entries")
     embeddings_model = GoogleGenerativeAIEmbeddings(
         model=Config.GEMINI_EMBEDDING_MODEL,
