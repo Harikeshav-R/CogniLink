@@ -12,6 +12,9 @@ from app.workflows.object_permanence.state import ObjectPermanenceState, ObjectP
 
 
 async def format_analyses(state: ObjectPermanenceState) -> dict:
+    if not state.was_filtered:
+        return {"formatted_analyses": []}
+
     logger.debug("Initializing chat model for analyses formatting...")
     model = init_pollinations_chat_model(
         Config.POLLINATIONS_SMART_MODEL,
