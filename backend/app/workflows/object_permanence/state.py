@@ -67,6 +67,10 @@ class ObjectPermanenceState(BaseModel, table=True):
         default=False,
         description="Whether the analysis results have been saved to the database."
     )
+    analyses_buffer: list[ObjectPermanenceObject] = Field(
+        description="The buffer of analyses to be analyzed on the next workflow run.",
+        default_factory=list
+    )
 
     # Config
     model_config = ConfigDict(arbitrary_types_allowed=True)
