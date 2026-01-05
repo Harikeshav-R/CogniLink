@@ -14,7 +14,16 @@ async def save_analysis(state: ObjectPermanenceState) -> dict:
     logger.trace("Entering save_analysis function")
 
     current_time = time.time()
-    contents = [entry.formatted_description for entry in state.formatted_analyses]
+    
+    valid_analyses = [
+        entry for entry in state.formatted_analyses if entry.formatted_description
+    ]
+
+    if not valid_analyses:
+        logger.debug("No valid formatted descriptions to save, returning empty dict")
+        return {}
+
+    contents = [entry.formatted_description for entry in valid_analyses]
     logger.debug(f"Extracted {len(contents)} content strings for embedding")
 
     if not contents:
@@ -35,8 +44,8 @@ async def save_analysis(state: ObjectPermanenceState) -> dict:
     logger.debug("Batch embedding complete.")
 
     # Iterate through entries and their corresponding pre-computed embeddings
-    for i, (entry, embedding) in enumerate(zip(state.filtered_results.entries, all_embeddings)):
-        logger.trace(f"Processing entry {i + 1}/{len(state.filtered_results.entries)}: {entry.name}")
+    for i, (entry, embedding) in enumerate(zip(valid_analyses, all_embeddings)):
+        logger.trace(f"Processing entry {i + 1}/{len(valid_analyses)}: {entry.name}")
         await create_log_entry(
             state.db_session,
             current_time,
