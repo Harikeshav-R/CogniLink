@@ -2,6 +2,8 @@ from typing import Optional, Literal
 
 from loguru import logger
 from pgvector.sqlalchemy import Vector
+from sqlalchemy import String
+from sqlalchemy.dialects.postgresql import ARRAY
 from sqlmodel import SQLModel, Field, Column
 
 
@@ -28,8 +30,8 @@ class ObjectPermanence(SQLModel, table=True):
         description="The description of the location of the object (e.g., 'on the table', 'in the kitchen', 'in the living room')."
     )
     landmarks: list[str] = Field(
-        description="A list of precise relation to landmarks (e.g., 'on the white marble counter', 'next to the red mug', 'under the table lamp').",
-        default_factory=list
+        default=[], sa_column=Column(ARRAY(String)),
+        description="A list of precise relation to landmarks (e.g., 'on the white marble counter', 'next to the red mug', 'under the table lamp')."
     )
     confidence: Literal["high", "medium", "low"] = Field(
         ...,
