@@ -63,6 +63,10 @@ class ObjectPermanenceState(BaseModel, table=True):
         description="A list of formatted object permanence frame analyses.",
         default_factory=list
     )
+    save_status: bool = Field(
+        default=False,
+        description="Whether the analysis results have been saved to the database."
+    )
 
     # Config
     model_config = ConfigDict(arbitrary_types_allowed=True)
