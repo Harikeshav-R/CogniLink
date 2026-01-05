@@ -5,15 +5,9 @@ class Prompts:
         You are an advanced Computer Vision State Analyzer designed for an Object Permanence System. Your goal is to analyze a video frame and extract a structured, semantic understanding of the physical environment and the objects within it.
         
         # Objective
-        Analyze the provided image frame and generate a JSON output that perfectly matches the `ObjectPermanenceAnalysis` schema. You must identify distinct objects, describe them with high specificity to allow for re-identification in future frames, and triangulate their positions relative to the environment.
+        Analyze the provided image frame and generate a JSON output that perfectly matches the schema. You must identify distinct objects, describe them with high specificity to allow for re-identification in future frames, and triangulate their positions relative to the environment.
         
         # Field Analysis & Instructions
-        
-        ## 1. Scene (`scene`)
-           - **Goal:** Provide the environmental context.
-           - **Instructions:** Describe the room type, lighting conditions (e.g., "dim", "harsh", "natural"), and overall clutter level. This helps assess visibility conditions.
-        
-        ## 2. Objects (`objects`)
            For every distinct, significant object you detect, extract the following:
         
            - **Name (`name`):** - Use a generic but accurate noun (e.g., "smartphone", "coffee mug", "keys").
@@ -37,6 +31,7 @@ class Prompts:
         
         # Constraints
         - Output **ONLY** valid JSON.
+        - IGNORE THE formatted_description FIELD. DO NOT EVER ADD OR MODIFY ANYTHING TO IT.
         - Do not hallucinate objects that are not clearly visible.
         - If the image contains text/labels on objects, include them in the `description`.
         - Focus on personal items and movable objects (keys, wallets, electronics, cups) rather than structural elements (walls, floors, windows) unless the structural element is a landmark.
@@ -48,7 +43,7 @@ class Prompts:
         You are the Semantic State Deduplication Agent for an Object Permanence system. Your goal is to filter a chronological log of frame analyses and return a clean, deduplicated list representing distinct states of the world.
         
         # Input Data
-        You will receive a JSON list of `ObjectPermanenceAnalysis` objects, each representing a frame in a video feed.
+        You will receive a JSON list of `ObjectPermanenceObject` objects, each representing a detected object in a video feed.
         
         # The Definition of a "Duplicate"
         A frame is considered a **Duplicate** (and must be discarded) if **ALL** objects in the frame satisfy the following conditions compared to the last *retained* frame:
@@ -62,7 +57,7 @@ class Prompts:
         # The Definition of a "New State" (Keep)
         You must keep a frame if **ANY** of the following occur:
         1.  **New Object:** A distinct, previously unseen object enters the scene.
-        2.  **Object Departure:** An object that was present is no longer detected (implicit state change).
+        2.  **Object Departure:** An object that was present is no longer detected at the place it previously was (implicit state change).
         3.  **Displacement:** An object changes its relationship to landmarks (e.g., moves from "next to lamp" to "next to fridge").
         4.  **Interaction:** A distinct change in how an object is being used (e.g., "mug on table" -> "mug held in hand").
         
@@ -73,6 +68,7 @@ class Prompts:
         4.  If it is a Duplicate (per the rules above), discard it.
         5.  If it represents a New State, keep it and treat it as the new baseline for comparison.
         6.  Return the filtered list of objects in valid JSON.
+        7.  IGNORE THE formatted_description FIELD. DO NOT EVER ADD OR MODIFY ANYTHING TO IT.
         
         # Few-Shot Examples
         
@@ -95,5 +91,5 @@ class Prompts:
         **Action:** Discard Frame B.
         
         # Output Format
-        Return **ONLY** the valid JSON list of `ObjectPermanenceAnalysis` objects. Do not include markdown formatting or explanation text.
+        Return **ONLY** the valid JSON list of `ObjectPermanenceObject` objects. Do not include markdown formatting or explanation text.
         """
