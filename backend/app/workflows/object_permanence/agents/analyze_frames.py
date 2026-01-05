@@ -11,7 +11,7 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import ObjectPermanenceState, ObjectPermanenceAnalysis
 
 
-async def analyze_frames(state: ObjectPermanenceState) -> dict:
+async def analyze_frame(state: ObjectPermanenceState) -> dict:
     """
     Asynchronously analyzes the given frame using a pre-initialized agent, leveraging a
     chat model for object permanence analysis. The function prepares the input frame,
