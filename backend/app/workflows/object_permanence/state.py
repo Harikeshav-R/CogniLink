@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
-class ObjectPermanenceStateObject(BaseModel):
+class ObjectPermanenceObject(BaseModel):
     name: str = Field(
         ...,
         description="The name of the object (e.g., 'mug','backpack', 'keys', 'wallet', 'headphones')."
@@ -28,15 +28,9 @@ class ObjectPermanenceStateObject(BaseModel):
         description="The confidence level of the object detection (high, medium, low)."
     )
 
-
-class ObjectPermanenceAnalysis(BaseModel):
-    scene: str = Field(
-        ...,
-        description="A concise description of the scene (e.g., 'A cluttered kitchen countertop with harsh lighting, with a few personal items on the dining table in the kitchen')."
-    )
-    objects: list[ObjectPermanenceStateObject] = Field(
-        description="A list of detected objects in the scene.",
-        default_factory=list
+    formatted_description: Optional[str] = Field(
+        description="A formatted description of the object that contains the metadata of the object: name, description, location, and landmarks, "
+                    "in a way that makes it easily indexable during RAG vector searches."
     )
 
 
@@ -44,21 +38,30 @@ class ObjectPermanenceState(BaseModel, table=True):
     # Input
     subscriber_id: str = Field(..., description="The subscriber ID of the agent subscribing to the state updates.")
     frame: Optional[Image] = Field(default=None, description="The current frame to process.")
-    past_analyses: list[ObjectPermanenceAnalysis] = Field(
+    past_analyses: list[ObjectPermanenceObject] = Field(
         description="A list of past object permanence frame analyses.",
         default_factory=list
     )
 
     # Internal
     db_session: AsyncSession
-    filtered_analyses: list[ObjectPermanenceAnalysis] = Field(
+    analyses: list[ObjectPermanenceObject] = Field(
+        description="The analysis results."
+    )
+
+    should_filter: bool = Field(
+        default=False,
+        description="Whether to filter the analyses."
+    )
+    filtered_analyses: list[ObjectPermanenceObject] = Field(
         description="A list of filtered object permanence frame analyses.",
         default_factory=list
     )
 
     # Output
-    analysis: Optional[ObjectPermanenceAnalysis] = Field(
-        description="The analysis results."
+    formatted_analyses: list[ObjectPermanenceObject] = Field(
+        description="A list of formatted object permanence frame analyses.",
+        default_factory=list
     )
 
     # Config
