@@ -9,6 +9,8 @@ from app.workflows.object_permanence.state import ObjectPermanenceState
 
 
 async def save_analysis(state: ObjectPermanenceState) -> dict:
+    if not state.was_filtered:
+        return {"save_status": False}
     logger.trace("Entering save_analysis function")
 
     current_time = time.time()
