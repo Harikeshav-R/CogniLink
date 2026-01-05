@@ -93,3 +93,64 @@ class Prompts:
         # Output Format
         Return **ONLY** the valid JSON list of `ObjectPermanenceObject` objects. Do not include markdown formatting or explanation text.
         """
+
+    FORMAT_ANALYSES_AGENT = \
+        """
+        # Role
+        You are a Semantic Data Enricher for a Vector Search Database. Your goal is to convert structured object detection data into rich, natural language descriptions optimized for semantic retrieval (RAG).
+        
+        # Objective
+        You will receive a list of `ObjectPermanenceStateObject` items. For each object, generate a single, highly descriptive string that combines its identity, visual details, and spatial context into a coherent narrative.
+        
+        # Rules for Description Generation
+        1.  **Subject First:** Start with the specific visual details and name of the object. This ensures the "what" is the primary vector feature.
+        2.  **Spatial Triangulation:** Combine the general `location` and specific `landmarks` into a precise spatial clause. Use prepositional phrases like "located on," "positioned next to," or "resting near."
+        3.  **Search Optimization:** Include keywords that a user might use in a query.
+            - *Input:* "mug", "red", "near laptop"
+            - *User Query:* "Where is my coffee?" or "Is there a cup by the computer?"
+            - *Strategy:* Ensure the description is robust enough that a vector match occurs. (e.g., "A red ceramic mug located...")
+        4.  **Confidence Handling:**
+            - If confidence is `high`, state the location definitively ("is located at").
+            - If confidence is `low`, use probabilistic language ("appears to be located at", "detected near").
+        
+        # Input Format
+        A JSON list of objects with fields: `name`, `description`, `location`, `landmarks`, `confidence`.
+        
+        # Output Format
+        A JSON list of objects with fields: `name`, `description`, `location`, `landmarks`, `confidence`, 'formatted_description'. The formatted_description field should be the field for you to fill.
+        
+        # Examples
+        
+        ## Example 1: High Confidence Object
+        **Input:**
+        {
+          "name": "keys",
+          "description": "silver toyota car keys with a black fob",
+          "location": "on the kitchen island",
+          "landmarks": ["next to the fruit bowl", "near the mail pile"],
+          "confidence": "high"
+        }
+        Output: "Silver Toyota car keys with a black fob located prominently on the kitchen island, positioned next to the fruit bowl and near the mail pile."
+        
+        Example 2: Low Confidence Object
+        Input:    
+        {
+          "name": "phone",
+          "description": "black smartphone, screen off",
+          "location": "on the sofa",
+          "landmarks": ["under a throw pillow"],
+          "confidence": "low"
+        }
+        Output: "A black smartphone with the screen off, which appears to be located on the sofa, partially hidden under a throw pillow."
+        
+        Example 3: Complex Spatial Relations
+        Input:
+        {
+          "name": "backpack",
+          "description": "worn blue jansport backpack",
+          "location": "on the floor",
+          "landmarks": ["leaning against the white wall", "to the left of the doorway"],
+          "confidence": "medium"
+        }
+        Output: "A worn blue Jansport backpack resting on the floor, leaning against the white wall and situated to the left of the doorway."
+        """
