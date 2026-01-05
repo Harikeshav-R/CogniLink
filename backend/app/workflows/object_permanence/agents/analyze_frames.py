@@ -45,7 +45,7 @@ async def analyze_frame(state: ObjectPermanenceState) -> dict:
         model=model,
         response_format=ObjectPermanenceAnalysis,
         system_prompt=SystemMessage(
-            content=Prompts.ANALYSIS_AGENT
+            content=Prompts.FRAME_ANALYSIS_AGENT
         ),
     )
     logger.debug("Agent created.")
@@ -57,28 +57,24 @@ async def analyze_frame(state: ObjectPermanenceState) -> dict:
     image_data = base64.b64encode(image_bytes.getvalue()).decode("utf-8")
 
     result = await agent.ainvoke(
-        {
-            "messages": [
-                HumanMessage(
-                    content=[
-                        {
-                            "type": "text",
-                            "text": Prompts.ANALYSIS_AGENT
-                        },
-                        {
-                            "type": "text",
-                            "text": "Here is your frame to analyze:"
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{image_data}"
-                            }
-                        }
-                    ]
-                )
+        HumanMessage(
+            content=[
+                {
+                    "type": "text",
+                    "text": Prompts.FRAME_ANALYSIS_AGENT
+                },
+                {
+                    "type": "text",
+                    "text": "Here is your frame to analyze:"
+                },
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{image_data}"
+                    }
+                }
             ]
-        }
+        )
     )
     logger.debug("Agent invocation complete.")
 
