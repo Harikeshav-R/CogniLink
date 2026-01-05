@@ -61,5 +61,5 @@ async def filter_analyses(state: ObjectPermanenceState) -> dict:
     logger.trace("Exiting analyze_frames function")
     return {
         "filtered_analyses": filtered_analyses,
-        "should_filter": True
+        "was_filtered": True
     }
