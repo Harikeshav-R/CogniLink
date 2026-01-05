@@ -49,4 +49,7 @@ async def save_analysis(state: ObjectPermanenceState) -> dict:
 
     logger.debug("Save analysis complete")
     logger.trace("Exiting save_analysis function")
-    return {"save_status": True}
+    return {
+        "save_status": True,
+        "analyses_buffer": state.formatted_analyses[-10:]
+    }
