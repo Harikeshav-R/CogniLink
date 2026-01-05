@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Literal
 
 from pgvector.sqlalchemy import Vector
 from sqlmodel import SQLModel, Field, Column
@@ -6,8 +6,33 @@ from sqlmodel import SQLModel, Field, Column
 
 class ObjectPermanence(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, description="The primary key of the table.")
-    content: str = Field(description="The natural language description of the log entry.")
-    embedding: list[float] = Field(sa_column=Column(Vector(3072)), description="The embedding of the log entry.")
     timestamp: float = Field(index=True, description="The timestamp of the log entry.")
-    object_name: str = Field(index=True, description="The name of the object to log.")
-    log_type: str = Field(description="The type of log entry: state | action")
+
+    name: str = Field(
+        ...,
+        description="The name of the object (e.g., 'mug','backpack', 'keys', 'wallet', 'headphones')."
+    )
+    description: str = Field(
+        ...,
+        description="A concise but detailed description of the object using adjective to describe the object "
+                    "(e.g., 'small, red mug', 'old, green backpack', 'black toyota corolla keys', 'brown leather wallet with cards in it', 'pink bose quietcomfort headphones')."
+    )
+    location: str = Field(
+        ...,
+        description="The description of the location of the object (e.g., 'on the table', 'in the kitchen', 'in the living room')."
+    )
+    landmarks: list[str] = Field(
+        description="A list of precise relation to landmarks (e.g., 'on the white marble counter', 'next to the red mug', 'under the table lamp').",
+        default_factory=list
+    )
+    confidence: Literal["high", "medium", "low"] = Field(
+        ...,
+        description="The confidence level of the object detection (high, medium, low)."
+    )
+
+    formatted_description: str = Field(
+        description="A formatted description of the object that contains the metadata of the object: name, description, location, and landmarks, "
+                    "in a way that makes it easily indexable during RAG vector searches."
+    )
+    embedding: list[float] = Field(sa_column=Column(Vector(3072)),
+                                   description="The embedding of the formatted description of the object.")
