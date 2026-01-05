@@ -1,8 +1,10 @@
-from typing import Literal, Optional
+from typing import Optional
 
 from PIL.Image import Image
 from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel.ext.asyncio.session import AsyncSession
+
+from app.models.object_permanence import ConfidenceLevel
 
 
 class ObjectPermanenceObject(BaseModel):
@@ -28,7 +30,7 @@ class ObjectPermanenceObject(BaseModel):
         description="A list of precise relation to landmarks (e.g., 'on the white marble counter', 'next to the red mug', 'under the table lamp').",
         default_factory=list
     )
-    confidence: Literal["high", "medium", "low"] = Field(
+    confidence: ConfidenceLevel = Field(
         ...,
         description="The confidence level of the object detection (high, medium, low)."
     )

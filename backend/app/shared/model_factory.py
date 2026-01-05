@@ -1,11 +1,11 @@
 from langchain.chat_models import init_chat_model
-from langchain_core.language_models.chat_models import ChatLLM
+from langchain_core.language_models.chat_models import BaseChatModel
 from loguru import logger
 
 from app.core.config import Config
 
 
-def init_google_genai_chat_model(model: str, api_key: str) -> ChatLLM:
+def init_google_genai_chat_model(model: str, api_key: str) -> BaseChatModel:
     """
     Initializes a Google Generative AI chat model using the specified model name and API key.
 
@@ -17,7 +17,7 @@ def init_google_genai_chat_model(model: str, api_key: str) -> ChatLLM:
     :param api_key: The API key for accessing the Google GenAI service.
     :type api_key: str
     :return: An initialized chat model instance.
-    :rtype: ChatLLM
+    :rtype: BaseChatModel
     """
     logger.info(f"Initializing Google GenAI chat model: {model}")
     logger.debug(f"Using provider: {Config.GEMINI_PROVIDER}")
@@ -37,7 +37,7 @@ def init_google_genai_chat_model(model: str, api_key: str) -> ChatLLM:
         raise
 
 
-def init_pollinations_chat_model(model: str, api_key: str) -> ChatLLM:
+def init_pollinations_chat_model(model: str, api_key: str) -> BaseChatModel:
     """
     Initializes a Pollinations chat model with the specified model name, API key, and endpoint.
 
@@ -49,7 +49,7 @@ def init_pollinations_chat_model(model: str, api_key: str) -> ChatLLM:
     :param api_key: The API key for accessing the Pollinations service.
     :type api_key: str
     :return: An initialized chat model instance.
-    :rtype: ChatLLM
+    :rtype: BaseChatModel
     """
     logger.info(f"Initializing Pollinations chat model: {model}")
     logger.debug(f"Using provider: {Config.POLLINATIONS_PROVIDER} and endpoint: {Config.POLLINATIONS_ENDPOINT}")

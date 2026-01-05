@@ -41,10 +41,6 @@ def create_compiled_state_graph() -> CompiledStateGraph:
     logger.info("Creating StateGraph for Object Permanence workflow.")
     workflow = StateGraph(ObjectPermanenceState)
 
-    logger.debug("Adding node: 'retrieve_frame'")
-    workflow.add_node("retrieve_frame",
-                      lambda state: {"frame": frame_broadcaster.get_frame(state.subscriber_id)})
-
     logger.debug("Adding node: 'analyze_frame'")
     workflow.add_node("analyze_frame", analyze_frame)
 
@@ -56,11 +52,8 @@ def create_compiled_state_graph() -> CompiledStateGraph:
 
     logger.info("Defining graph structure (edges).")
 
-    logger.debug("Setting entry point to 'retrieve_frame'.")
-    workflow.set_entry_point("retrieve_frame")
-
-    logger.debug("Adding edge from 'retrieve_frame' to 'analyze_frame'.")
-    workflow.add_edge("retrieve_frame", "analyze_frame")
+    logger.debug("Setting entry point to 'analyze_frame'.")
+    workflow.set_entry_point("analyze_frame")
 
     logger.debug("Adding edge from 'analyze_frame' to 'detect_state_change'.")
     workflow.add_edge("analyze_frame", "detect_state_change")

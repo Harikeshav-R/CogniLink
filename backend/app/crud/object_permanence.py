@@ -1,7 +1,7 @@
 from loguru import logger
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.models.object_permanence import ObjectPermanence
+from app.models.object_permanence import ObjectPermanence, ConfidenceLevel
 
 
 async def create_log_entry(
@@ -11,7 +11,7 @@ async def create_log_entry(
         description: str,
         location: str,
         landmarks: list[str],
-        confidence: str,
+        confidence: ConfidenceLevel,
         formatted_description: str,
         embedding: list[float]
 ):
@@ -35,7 +35,7 @@ async def create_log_entry(
     :param landmarks: A list of landmarks near the object.
     :type landmarks: list[str]
     :param confidence: The confidence level of the detection.
-    :type confidence: str
+    :type confidence: ConfidenceLevel
     :param formatted_description: A formatted description for vector searches.
     :type formatted_description: str
     :param embedding: The embedding of the formatted description.

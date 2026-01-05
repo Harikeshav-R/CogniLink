@@ -1,10 +1,17 @@
-from typing import Optional, Literal
+from enum import Enum
+from typing import Optional
 
 from loguru import logger
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlmodel import SQLModel, Field, Column
+
+
+class ConfidenceLevel(str, Enum):
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
 
 
 class ObjectPermanence(SQLModel, table=True):
@@ -33,7 +40,7 @@ class ObjectPermanence(SQLModel, table=True):
         default=[], sa_column=Column(ARRAY(String)),
         description="A list of precise relation to landmarks (e.g., 'on the white marble counter', 'next to the red mug', 'under the table lamp')."
     )
-    confidence: Literal["high", "medium", "low"] = Field(
+    confidence: ConfidenceLevel = Field(
         ...,
         description="The confidence level of the object detection (high, medium, low)."
     )
