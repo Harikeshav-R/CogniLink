@@ -41,6 +41,8 @@ class ObjectPermanenceAnalysis(BaseModel):
 
 class ObjectPermanenceState(BaseModel, table=True):
     # Input
+    subscriber_id: str = Field(..., description="The subscriber ID of the agent subscribing to the state updates.")
+
     frame: Image = Field(..., description="The current frame to process.")
 
     # Output
