@@ -6,7 +6,7 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from loguru import logger
 
 from app.core.config import Config
-from app.core.model_factory import init_pollinations_chat_model
+from app.shared.model_factory import init_pollinations_chat_model
 from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.state import ObjectPermanenceState, ObjectPermanenceAnalysis
 
