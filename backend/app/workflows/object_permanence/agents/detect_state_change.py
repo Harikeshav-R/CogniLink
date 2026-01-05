@@ -25,6 +25,11 @@ async def detect_state_change(state: ObjectPermanenceState) -> dict:
     Compares the current frame's analysis with the last saved analysis to determine
     if a significant change has occurred. This is a key step in deciding whether
     to save the new state.
+
+    :param state: The current state of the workflow, containing the current and last saved analyses.
+    :type state: ObjectPermanenceState
+    :return: A dictionary with a single key 'is_state_changed' holding a boolean value.
+    :rtype: dict
     """
     logger.trace("Entering 'detect_state_change' node.")
 

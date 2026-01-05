@@ -15,8 +15,12 @@ logger.info("Database engine created successfully.")
 async def init_db() -> None:
     """
     Initializes the database by creating tables and enabling necessary extensions.
+
     It enables the 'vector' extension for pgvector support and creates all tables
     defined by SQLModel metadata.
+
+    :return: None
+    :rtype: None
     """
     logger.info("Initializing the database...")
     async with engine.begin() as conn:
@@ -33,8 +37,12 @@ async def init_db() -> None:
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Asynchronous generator that provides a database session.
+
     It creates a new AsyncSession for each call and yields it, ensuring that
     the session is properly closed after use.
+
+    :return: An asynchronous generator yielding a database session.
+    :rtype: AsyncGenerator[AsyncSession, None]
     """
     logger.debug("Creating new database session.")
     async with AsyncSession(engine) as session:

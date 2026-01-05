@@ -15,6 +15,20 @@ from app.workflows.object_permanence.state import ObjectPermanenceState, ObjectP
 
 
 async def format_and_save_state(state: ObjectPermanenceState) -> dict:
+    """
+    Formats the analysis from the current state and saves it to the database.
+
+    This involves two main parts:
+    1. Formatting the analysis into a rich, natural language description for better
+       semantic search indexing.
+    2. Generating embeddings for the formatted descriptions and saving the complete
+       log entry to the database.
+
+    :param state: The current state of the workflow, holding the analysis to be formatted and saved.
+    :type state: ObjectPermanenceState
+    :return: A dictionary with a single key 'save_status' indicating if the save was successful.
+    :rtype: dict
+    """
     logger.trace("Entering format_and_save_state function")
 
     # Part 1: Format the analysis

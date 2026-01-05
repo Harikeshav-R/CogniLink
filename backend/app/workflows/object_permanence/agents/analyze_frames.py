@@ -18,6 +18,11 @@ async def analyze_frame(state: ObjectPermanenceState) -> dict:
     Analyzes a single video frame to detect and identify objects, their properties,
     and their spatial relationships. It uses a vision-capable chat model to perform
     the analysis.
+
+    :param state: The current state of the workflow, containing the frame to be analyzed.
+    :type state: ObjectPermanenceState
+    :return: A dictionary containing the results of the analysis under the key 'current_analysis'.
+    :rtype: dict
     """
     logger.trace("Entering 'analyze_frame' node.")
 

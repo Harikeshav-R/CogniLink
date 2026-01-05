@@ -17,20 +17,31 @@ async def create_log_entry(
 ):
     """
     Creates and saves a new log entry for an object's state in the database.
+
     This function takes detailed information about a detected object, creates an
     ObjectPermanence instance, adds it to the database session, commits the transaction,
     and refreshes the instance to reflect the newly created entry.
 
     :param db: The database session to use for the transaction.
+    :type db: AsyncSession
     :param timestamp: The timestamp of the log entry.
+    :type timestamp: float
     :param name: The name of the object.
+    :type name: str
     :param description: A detailed description of the object.
+    :type description: str
     :param location: The location of the object.
+    :type location: str
     :param landmarks: A list of landmarks near the object.
+    :type landmarks: list[str]
     :param confidence: The confidence level of the detection.
+    :type confidence: str
     :param formatted_description: A formatted description for vector searches.
+    :type formatted_description: str
     :param embedding: The embedding of the formatted description.
+    :type embedding: list[float]
     :return: The newly created ObjectPermanence instance.
+    :rtype: ObjectPermanence
     """
     logger.info(f"Creating log entry for object: {name}")
     logger.debug(f"Object details: name={name}, description={description}, location={location}, confidence={confidence}")

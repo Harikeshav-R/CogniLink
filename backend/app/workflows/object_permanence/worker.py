@@ -11,8 +11,13 @@ from app.workflows.object_permanence.workflow import create_compiled_state_graph
 
 async def object_permanence_worker(db_session: AsyncSession):
     """
-    The main worker for the object permanence workflow. It continuously processes
-    video frames to detect and log changes in the observed state.
+    The main worker for the object permanence workflow.
+
+    It continuously processes video frames to detect and log changes in the
+    observed state. It runs in an infinite loop.
+
+    :param db_session: The database session used for saving state changes.
+    :type db_session: AsyncSession
     """
     logger.info("Initializing object permanence worker...")
     graph = create_compiled_state_graph()

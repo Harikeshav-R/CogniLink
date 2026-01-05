@@ -20,8 +20,12 @@ from app.workflows.object_permanence.worker import object_permanence_worker
 async def lifespan(app: FastAPI):
     """
     An asynchronous context manager to handle application startup and shutdown events.
+
     It initializes the database, starts a resilient background worker for object
     permanence analysis, and ensures graceful shutdown of the worker task.
+
+    :param app: The FastAPI application instance.
+    :type app: FastAPI
     """
     # On Startup
     logger.info("Application lifespan starting...")
@@ -84,7 +88,12 @@ if Config.DEBUG:
 
 @app.get("/")
 async def root():
-    """A simple endpoint to confirm the API is running."""
+    """
+    A simple endpoint to confirm the API is running.
+
+    :return: A confirmation message.
+    :rtype: dict
+    """
     logger.debug("Root endpoint '/' accessed.")
     return {"message": "CogniLink API is running."}
 
@@ -93,6 +102,11 @@ async def root():
 async def get_db_version(session: AsyncSession = Depends(get_session)):
     """
     Tests the database connection by retrieving the PostgreSQL version.
+
+    :param session: The database session, injected by FastAPI's dependency system.
+    :type session: AsyncSession
+    :return: A dictionary containing the database version or an error message.
+    :rtype: dict
     """
     logger.info("Request received for '/api/db-version' endpoint.")
     try:
@@ -111,8 +125,12 @@ async def get_db_version(session: AsyncSession = Depends(get_session)):
 async def websocket_endpoint(websocket: WebSocket):
     """
     Handles the WebSocket connection for the object permanence workflow.
+
     It accepts a connection, receives image frames as bytes, converts them
     to PIL Images, and broadcasts them for processing.
+
+    :param websocket: The WebSocket connection instance.
+    :type websocket: WebSocket
     """
     await websocket.accept()
     logger.info(f"WebSocket connection accepted from client: {websocket.client.host}:{websocket.client.port}")

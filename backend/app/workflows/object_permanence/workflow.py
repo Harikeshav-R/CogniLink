@@ -14,7 +14,9 @@ def should_save_analysis(state: ObjectPermanenceState) -> str:
     Determines the next step in the workflow based on whether a state change was detected.
 
     :param state: The current state of the workflow, containing the `is_state_changed` flag.
+    :type state: ObjectPermanenceState
     :return: "format_and_save_state" if a change was detected, otherwise END to terminate the flow.
+    :rtype: str
     """
     logger.debug("Evaluating conditional edge: 'should_save_analysis'")
     if state.is_state_changed:
@@ -34,6 +36,7 @@ def create_compiled_state_graph() -> CompiledStateGraph:
     graph is a callable object that executes the defined workflow.
 
     :return: A compiled `CompiledStateGraph` instance ready for execution.
+    :rtype: CompiledStateGraph
     """
     logger.info("Creating StateGraph for Object Permanence workflow.")
     workflow = StateGraph(ObjectPermanenceState)

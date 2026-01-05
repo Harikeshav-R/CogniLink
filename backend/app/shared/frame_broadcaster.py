@@ -43,7 +43,9 @@ class FrameBroadcaster:
         and a dedicated frame queue.
 
         :param name: An optional name for the subscriber for easier identification in logs.
+        :type name: str
         :return: A unique subscription ID string.
+        :rtype: str
         """
         sub_id = f"{name}_{uuid.uuid4().hex[:8]}"
         logger.info(f"New subscription request from '{name}'. Generated ID: {sub_id}")
@@ -62,6 +64,9 @@ class FrameBroadcaster:
         Removes a subscriber and their associated queue from the broadcaster.
 
         :param sub_id: The subscription ID of the subscriber to remove.
+        :type sub_id: str
+        :return: None
+        :rtype: None
         """
         logger.info(f"Unsubscribe request for ID: {sub_id}")
         with self._lock:
@@ -80,6 +85,9 @@ class FrameBroadcaster:
         it to each of their queues.
 
         :param frame: The PIL Image frame to be broadcast.
+        :type frame: Image
+        :return: None
+        :rtype: None
         """
         logger.debug(f"Request to broadcast a new frame of size {frame.size}.")
         with self._lock:
@@ -101,7 +109,9 @@ class FrameBroadcaster:
         if one is available, otherwise returns None.
 
         :param sub_id: The unique ID of the subscriber.
+        :type sub_id: str
         :return: A PIL Image frame, or None if the queue is empty.
+        :rtype: Image | None
         """
         logger.trace(f"Frame request from subscriber: {sub_id}")
         queue = self.subscribers.get(sub_id)
