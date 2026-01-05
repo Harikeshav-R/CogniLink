@@ -1,40 +1,64 @@
-import os
-import tempfile
+import asyncio
+import io
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends, UploadFile, File
+from PIL import Image
+from fastapi import FastAPI, Depends, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from loguru import logger
 from sqlalchemy import func
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.core.config import Config
 from app.core.db import get_session, init_db
-from app.workflows.object_permanence.state import State
-from app.workflows.object_permanence.workflow import create_compiled_state_graph
+from app.shared.frame_broadcaster import frame_broadcaster
+from app.workflows.object_permanence.worker import object_permanence_worker
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # On Startup
+    logger.info("Starting application lifespan...")
 
     # Setup the database
     await init_db()
 
+    # Define a resilient manager for the object permanence worker
+    async def worker_manager():
+        while True:
+            try:
+                logger.info("Starting object permanence worker...")
+                # get_session() is an async generator that handles session creation and cleanup
+                async for db_session in get_session():
+                    await object_permanence_worker(db_session)
+            except Exception as e:
+                # If the worker crashes, log the error and restart after a delay
+                logger.error(f"Object permanence worker crashed with error: {e}. Restarting in 5 seconds...")
+                await asyncio.sleep(5)
+
+    # Create the background task
+    task = asyncio.create_task(worker_manager())
+    logger.info("Object permanence worker task created.")
+
     yield
 
     # On Shutdown
-    pass
+    logger.info("Shutting down application lifespan...")
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        logger.info("Object permanence worker task cancelled successfully.")
 
 
 app = FastAPI(lifespan=lifespan)
 
 if Config.DEBUG:
     # CORS Middleware for development
-    # This allows the frontend (running on localhost:5173) to communicate with the backend.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:5173"],  # Allows the dev frontend
+        allow_origins=["http://localhost:5173", "http://localhost:8000"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -60,44 +84,26 @@ async def get_db_version(session: AsyncSession = Depends(get_session)):
         return {"error": f"Database connection failed: {e}"}
 
 
-@app.post("/api/workflows/object-permanence")
-async def run_object_permanence_workflow(
-        session: AsyncSession = Depends(get_session),
-        video_clip: UploadFile = File(...),
-):
+@app.websocket("/ws/object-permanence")
+async def websocket_endpoint(websocket: WebSocket):
     """
-    Runs the object permanence workflow on a video clip.
-
-    This endpoint receives a video clip, saves it to a temporary file, and
-    triggers a LangGraph workflow. The workflow is responsible for extracting
-    frames, analyzing them for object permanence, and storing the results.
-
-    The state of the workflow after execution is returned, excluding non-serializable
-    fields like the database session.
+    Handles the WebSocket connection for the object permanence workflow.
+    Receives frames from a client and passes them to the frame broadcaster.
     """
-    # Create a temporary file to store the video clip
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
-        content = await video_clip.read()
-        tmp.write(content)
-        video_path = tmp.name
-
+    await websocket.accept()
+    logger.info("Object permanence websocket connected.")
     try:
-        initial_state = State(video_path=video_path, db_session=session)
+        while True:
+            data = await websocket.receive_bytes()
+            try:
+                # Convert the received bytes into a PIL Image
+                frame = Image.open(io.BytesIO(data))
+                # Update the frame in the broadcaster for the worker to pick up
+                frame_broadcaster.broadcast(frame)
+            except Exception as e:
+                logger.error(f"Error processing frame from websocket: {e}")
 
-        graph = create_compiled_state_graph()
-
-        # The graph.invoke will return the final state.
-        final_state = await graph.ainvoke(initial_state)
-
-        # The state contains non-serializable fields.
-        # We select the serializable fields to return.
-        serializable_state = {
-            key: value
-            for key, value in final_state.items()
-            if key not in ["video_path", "frames", "db_session"]
-        }
-
-        return serializable_state
-    finally:
-        # Clean up the temporary file
-        os.unlink(video_path)
+    except WebSocketDisconnect:
+        logger.info("Object permanence websocket disconnected.")
+    except Exception as e:
+        logger.error(f"An unexpected error occurred in the websocket: {e}")
