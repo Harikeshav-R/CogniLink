@@ -23,7 +23,7 @@ async def format_and_save_state(state: ObjectPermanenceState) -> dict:
         Config.POLLINATIONS_SMART_MODEL,
         Config.POLLINATIONS_API_KEY
     )
-    logger.debug("Chat model initialized.")
+    logger.debug("Chat model for formatting initialized.")
 
     logger.debug("Creating agent for analyses formatting...")
     format_agent = create_agent(
@@ -33,7 +33,13 @@ async def format_and_save_state(state: ObjectPermanenceState) -> dict:
             content=Prompts.FORMAT_ANALYSES_AGENT
         ),
     )
-    logger.debug("Agent created.")
+    logger.debug("Formatting agent created.")
+
+    analyses_to_format_json = json.dumps(
+        [obj.model_dump() for obj in state.current_analysis],
+        indent=2
+    )
+    logger.trace(f"Calling formatting agent with analyses:\n{analyses_to_format_json}")
 
     format_result = await format_agent.ainvoke(
         HumanMessage(
@@ -48,30 +54,31 @@ async def format_and_save_state(state: ObjectPermanenceState) -> dict:
                 },
                 {
                     "type": "text",
-                    "text": json.dumps(
-                        [obj.model_dump() for obj in state.current_analysis],
-                        indent=2
-                    )
+                    "text": analyses_to_format_json
                 }
             ]
         )
     )
     logger.debug("Agent invocation for formatting complete.")
     formatted_analyses: list[ObjectPermanenceObject] = format_result["structured_response"]
+    logger.trace(f"Formatted analyses received:\n{json.dumps([obj.model_dump() for obj in formatted_analyses], indent=2)}")
 
     # Part 2: Save the formatted analysis
     current_time = time.time()
+    logger.debug(f"Current time for log entries: {current_time}")
 
     valid_analyses = [
         entry for entry in formatted_analyses if entry.formatted_description
     ]
+    logger.info(f"Found {len(valid_analyses)} valid analyses with formatted descriptions to save.")
 
     if not valid_analyses:
-        logger.warning("No valid formatted descriptions to save.")
+        logger.warning("No valid formatted descriptions to save. Skipping database entry.")
         return {"save_status": False}
 
     contents = [entry.formatted_description for entry in valid_analyses]
     logger.debug(f"Extracted {len(contents)} content strings for embedding.")
+    logger.trace(f"Contents for embedding:\n{contents}")
 
     logger.debug("Initializing embedding model...")
     embeddings_model = GoogleGenerativeAIEmbeddings(
@@ -81,12 +88,13 @@ async def format_and_save_state(state: ObjectPermanenceState) -> dict:
     )
     logger.debug("Embedding model initialized.")
 
-    logger.debug(f"Batch embedding {len(contents)} entries...")
+    logger.info(f"Batch embedding {len(contents)} entries...")
     all_embeddings = await embeddings_model.aembed_documents(contents)
-    logger.debug("Batch embedding complete.")
+    logger.info("Batch embedding complete.")
 
+    logger.info(f"Saving {len(valid_analyses)} entries to the database...")
     for entry, embedding in zip(valid_analyses, all_embeddings):
-        logger.trace(f"Processing entry: {entry.name}")
+        logger.debug(f"Creating database log entry for object: '{entry.name}'")
         await create_log_entry(
             state.db_session,
             current_time,
@@ -99,6 +107,6 @@ async def format_and_save_state(state: ObjectPermanenceState) -> dict:
             embedding
         )
 
-    logger.debug("Save analysis complete")
+    logger.info("Save analysis complete for all entries.")
     logger.trace("Exiting format_and_save_state function")
     return {"save_status": True}

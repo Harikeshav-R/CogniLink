@@ -6,6 +6,11 @@ from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 class ObjectPermanenceObject(BaseModel):
+    """
+    Represents a single detected object within a frame, encapsulating its attributes
+    like name, detailed description, location, landmarks, and detection confidence.
+    This model is used for both raw analysis results and formatted descriptions.
+    """
     name: str = Field(
         ...,
         description="The name of the object (e.g., 'mug','backpack', 'keys', 'wallet', 'headphones')."
@@ -34,7 +39,12 @@ class ObjectPermanenceObject(BaseModel):
     )
 
 
-class ObjectPermanenceState(BaseModel, table=True):
+class ObjectPermanenceState(BaseModel):
+    """
+    Defines the overall state object passed between nodes in the object permanence workflow.
+    It encapsulates all necessary inputs, internal processing states, and outputs
+    required for the workflow's execution.
+    """
     # Inputs
     subscriber_id: str = Field(..., description="The subscriber ID of the agent subscribing to the state updates.")
     frame: Optional[Image] = Field(default=None, description="The current frame to process.")

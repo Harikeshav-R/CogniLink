@@ -1,4 +1,9 @@
 class Prompts:
+    """
+    Holds various prompt templates used by agents in the object permanence workflow.
+    These prompts define the roles, objectives, and constraints for language models
+    involved in frame analysis, state change detection, and data formatting.
+    """
     FRAME_ANALYSIS_AGENT = \
         """
         # Role

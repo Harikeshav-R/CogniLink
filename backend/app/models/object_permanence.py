@@ -1,10 +1,16 @@
 from typing import Optional, Literal
 
+from loguru import logger
 from pgvector.sqlalchemy import Vector
 from sqlmodel import SQLModel, Field, Column
 
 
 class ObjectPermanence(SQLModel, table=True):
+    """
+    Represents an object's state at a specific point in time, stored in the database.
+    This model is used to track objects, their descriptions, locations, and confidence levels,
+    along with an embedding for semantic search.
+    """
     id: Optional[int] = Field(default=None, primary_key=True, description="The primary key of the table.")
     timestamp: float = Field(index=True, description="The timestamp of the log entry.")
 
@@ -36,3 +42,6 @@ class ObjectPermanence(SQLModel, table=True):
     )
     embedding: list[float] = Field(sa_column=Column(Vector(3072)),
                                    description="The embedding of the formatted description of the object.")
+
+
+logger.debug("SQLModel 'ObjectPermanence' defined.")

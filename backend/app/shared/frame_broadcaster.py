@@ -7,114 +7,118 @@ from loguru import logger
 
 
 class FrameBroadcaster:
+    """
+    A thread-safe singleton class for broadcasting image frames to multiple subscribers.
+    Each subscriber receives frames on an independent queue, preventing slow consumers
+    from blocking others.
+    """
     _instance = None
     _lock = threading.Lock()
 
     def __new__(cls):
         """
-        Creates or fetches the singleton instance of the FrameBroadcaster class, ensuring
-        thread-safe initialization. If the instance already exists, it returns the same, 
-        else it initializes the instance and creates a dictionary to store subscribers.
-
-        :returns: The singleton instance of the FrameBroadcaster class
-        :rtype: FrameBroadcaster
+        Creates or returns the singleton instance of the FrameBroadcaster.
+        This ensures that there is only one frame broadcaster throughout the application,
+        providing a single point for frame distribution.
         """
         if cls._instance is None:
+            logger.debug("FrameBroadcaster instance not found, creating a new one.")
             with cls._lock:
+                logger.trace("Acquired lock for singleton creation.")
                 if cls._instance is None:
                     cls._instance = super(FrameBroadcaster, cls).__new__(cls)
                     # Dictionary to hold subscriber queues: { subscriber_id: deque }
                     cls._instance.subscribers = {}
-                    logger.info("FrameBroadcaster singleton instance created")
+                    logger.info("FrameBroadcaster singleton instance created.")
+                else:
+                    logger.debug("Singleton instance already created by another thread.")
+                logger.trace("Released lock for singleton creation.")
+        else:
+            logger.trace("Returning existing FrameBroadcaster instance.")
         return cls._instance
 
     def subscribe(self, name: str = "agent") -> str:
         """
-        Generates a unique subscription ID for a new subscriber, registers them with their
-        own message buffer, and returns the ID. Each subscriber receives an independent 
-        message buffer to prevent delays caused by slower subscribers. However, their 
-        buffer will drop older messages if it exceeds the maximum length.
+        Registers a new subscriber and provides them with a unique subscription ID
+        and a dedicated frame queue.
 
-        :param name: Name of the subscriber. Defaults to "agent".
-        :type name: str
-        :return: A unique subscription ID for the newly registered subscriber.
-        :rtype: str
+        :param name: An optional name for the subscriber for easier identification in logs.
+        :return: A unique subscription ID string.
         """
         sub_id = f"{name}_{uuid.uuid4().hex[:8]}"
-        logger.debug(f"Generating subscription ID: {sub_id} for subscriber name: {name}")
+        logger.info(f"New subscription request from '{name}'. Generated ID: {sub_id}")
         with self._lock:
-            # Give every subscriber their own buffer.
-            # If one agent is slow, it won't block the others,
-            # but it will start dropping its own frames (maxlen=5).
+            logger.trace(f"Acquired lock to register subscriber {sub_id}.")
+            # Each subscriber gets its own buffer. If one is slow, it won't block others,
+            # but it will drop its own oldest frames if the deque fills up (maxlen=5).
             self.subscribers[sub_id] = deque(maxlen=5)
-        logger.info(f"📡 New Subscriber Registered: {sub_id} (total subscribers: {len(self.subscribers)})")
+            logger.debug(f"Subscriber {sub_id} registered with a new deque (maxlen=5).")
+            logger.trace(f"Released lock after registering subscriber {sub_id}.")
+        logger.info(f"📡 Subscriber '{sub_id}' successfully registered. Total subscribers: {len(self.subscribers)}")
         return sub_id
 
     def unsubscribe(self, sub_id: str):
         """
-        Unsubscribes a subscriber identified by the given subscription ID.
+        Removes a subscriber and their associated queue from the broadcaster.
 
-        This method removes the subscriber associated with the provided subscription ID
-        from the list of subscribers, if it exists. The operation is performed 
-        within a thread-safe context to ensure consistency across multiple threads.
-
-        :param sub_id: Subscription ID of the subscriber to be removed.
-        :type sub_id: str
-        :return: None.
+        :param sub_id: The subscription ID of the subscriber to remove.
         """
+        logger.info(f"Unsubscribe request for ID: {sub_id}")
         with self._lock:
+            logger.trace(f"Acquired lock to unsubscribe subscriber {sub_id}.")
             if sub_id in self.subscribers:
                 del self.subscribers[sub_id]
-                logger.info(f"Subscriber unsubscribed: {sub_id} (remaining subscribers: {len(self.subscribers)})")
+                logger.info(f"Subscriber '{sub_id}' successfully unsubscribed.")
             else:
-                logger.warning(f"Attempted to unsubscribe non-existent subscriber: {sub_id}")
+                logger.warning(f"Attempted to unsubscribe non-existent subscriber ID: {sub_id}")
+            logger.trace(f"Released lock after unsubscribing subscriber {sub_id}.")
+        logger.debug(f"Total subscribers remaining: {len(self.subscribers)}")
 
     def broadcast(self, frame: Image):
         """
-        Broadcasts a given frame to all subscribed queues.
+        Distributes a frame to all currently registered subscribers by adding
+        it to each of their queues.
 
-        This method is designed to distribute a frame to all subscribers
-        in a thread-safe manner. It ensures that the operation on the
-        subscribers' queues is synchronized, preventing potential race
-        conditions when multiple threads access shared resources.
-
-        :param frame: The frame to be broadcasted to all subscribers.
-        :type frame: Image
+        :param frame: The PIL Image frame to be broadcast.
         """
+        logger.debug(f"Request to broadcast a new frame of size {frame.size}.")
         with self._lock:
+            logger.trace("Acquired lock to broadcast frame.")
             subscriber_count = len(self.subscribers)
-            logger.debug(f"Broadcasting frame to {subscriber_count} subscriber(s)")
-            for queue in self.subscribers.values():
-                queue.append(frame)
+            if subscriber_count > 0:
+                logger.debug(f"Broadcasting frame to {subscriber_count} subscriber(s).")
+                for sub_id, queue in self.subscribers.items():
+                    queue.append(frame)
+                    logger.trace(f"Appended frame to queue for subscriber '{sub_id}'.")
+            else:
+                logger.debug("No subscribers to broadcast to.")
+            logger.trace("Released lock after broadcasting frame.")
 
     def get_frame(self, sub_id: str) -> Image | None:
         """
-        Retrieve the next frame from a subscriber's queue.
+        Retrieves the next frame from a specific subscriber's queue.
+        This is a non-blocking, thread-safe operation that returns a frame
+        if one is available, otherwise returns None.
 
-        This method fetches and removes the next available image frame from the
-        queue associated with the provided subscriber ID. It ensures thread-safe
-        access to the deque by using the defined class setup. If the queue exists
-        and contains frames, the next frame is returned. If not, the method
-        returns `None`.
-
-        :param sub_id: The unique identifier of the subscriber for which the frame
-            is being requested.
-        :type sub_id: str
-
-        :return: The next available image frame for the subscriber, or `None` if the
-            queue is empty or does not exist.
-        :rtype: Image or None
+        :param sub_id: The unique ID of the subscriber.
+        :return: A PIL Image frame, or None if the queue is empty.
         """
-        # We don't need the heavy lock for reading from deque (it's atomic in Python),
-        # but for strict safety in this specific class setup:
+        logger.trace(f"Frame request from subscriber: {sub_id}")
         queue = self.subscribers.get(sub_id)
-        if queue and len(queue) > 0:
-            frame = queue.popleft()
-            logger.debug(f"Frame retrieved for subscriber {sub_id} (queue length: {len(queue)})")
-            return frame
-        logger.debug(f"No frame available for subscriber {sub_id} (queue empty or doesn't exist)")
-        return None
+        if queue:
+            try:
+                # popleft() is an atomic operation in Python's deque
+                frame = queue.popleft()
+                logger.debug(f"Retrieved frame for subscriber {sub_id}. Remaining queue size: {len(queue)}")
+                return frame
+            except IndexError:
+                logger.trace(f"No frame available for subscriber {sub_id} (queue is empty).")
+                return None
+        else:
+            logger.warning(f"Subscriber '{sub_id}' not found when trying to get a frame.")
+            return None
 
 
 # Global Instance
+logger.debug("Creating global instance of FrameBroadcaster.")
 frame_broadcaster = FrameBroadcaster()
