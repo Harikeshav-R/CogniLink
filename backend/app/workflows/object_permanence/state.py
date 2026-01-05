@@ -48,10 +48,9 @@ class ObjectPermanenceState(BaseModel, table=True):
     analyses: list[ObjectPermanenceObject] = Field(
         description="The analysis results."
     )
-
-    should_filter: bool = Field(
+    was_filtered: bool = Field(
         default=False,
-        description="Whether to filter the analyses."
+        description="Whether the analyses were filtered out by the filter agent."
     )
     filtered_analyses: list[ObjectPermanenceObject] = Field(
         description="A list of filtered object permanence frame analyses.",
