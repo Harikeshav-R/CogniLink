@@ -2,6 +2,7 @@ from typing import Literal, Optional
 
 from PIL.Image import Image
 from pydantic import BaseModel, ConfigDict, Field
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 class ObjectPermanenceStateObject(BaseModel):
@@ -42,8 +43,18 @@ class ObjectPermanenceAnalysis(BaseModel):
 class ObjectPermanenceState(BaseModel, table=True):
     # Input
     subscriber_id: str = Field(..., description="The subscriber ID of the agent subscribing to the state updates.")
-
     frame: Optional[Image] = Field(default=None, description="The current frame to process.")
+    past_analyses: list[ObjectPermanenceAnalysis] = Field(
+        description="A list of past object permanence frame analyses.",
+        default_factory=list
+    )
+
+    # Internal
+    db_session: AsyncSession
+    filtered_analyses: list[ObjectPermanenceAnalysis] = Field(
+        description="A list of filtered object permanence frame analyses.",
+        default_factory=list
+    )
 
     # Output
     analysis: Optional[ObjectPermanenceAnalysis] = Field(
