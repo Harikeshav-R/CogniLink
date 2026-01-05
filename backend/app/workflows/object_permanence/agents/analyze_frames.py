@@ -84,5 +84,5 @@ async def analyze_frame(state: ObjectPermanenceState) -> dict:
 
     logger.trace("Exiting analyze_frames function")
     return {
-        "analyses": analysis
+        "current_analysis": analysis
     }

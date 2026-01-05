@@ -35,40 +35,29 @@ class ObjectPermanenceObject(BaseModel):
 
 
 class ObjectPermanenceState(BaseModel, table=True):
-    # Input
+    # Inputs
     subscriber_id: str = Field(..., description="The subscriber ID of the agent subscribing to the state updates.")
     frame: Optional[Image] = Field(default=None, description="The current frame to process.")
-    past_analyses: list[ObjectPermanenceObject] = Field(
-        description="A list of past object permanence frame analyses.",
-        default_factory=list
+    last_saved_analysis: Optional[list[ObjectPermanenceObject]] = Field(
+        default=None,
+        description="Memory of the last saved state"
     )
 
-    # Internal
+    # Internal state
     db_session: AsyncSession
-    analyses: list[ObjectPermanenceObject] = Field(
-        description="The analysis results."
+    current_analysis: Optional[list[ObjectPermanenceObject]] = Field(
+        default=None,
+        description="Analysis of the current frame"
     )
-    was_filtered: bool = Field(
+    is_state_changed: bool = Field(
         default=False,
-        description="Whether the analyses were filtered out by the filter agent."
-    )
-    filtered_analyses: list[ObjectPermanenceObject] = Field(
-        description="A list of filtered object permanence frame analyses.",
-        default_factory=list
+        description="Flag indicating if a change was detected"
     )
 
     # Output
-    formatted_analyses: list[ObjectPermanenceObject] = Field(
-        description="A list of formatted object permanence frame analyses.",
-        default_factory=list
-    )
     save_status: bool = Field(
         default=False,
         description="Whether the analysis results have been saved to the database."
-    )
-    analyses_buffer: list[ObjectPermanenceObject] = Field(
-        description="The buffer of analyses to be analyzed on the next workflow run.",
-        default_factory=list
     )
 
     # Config

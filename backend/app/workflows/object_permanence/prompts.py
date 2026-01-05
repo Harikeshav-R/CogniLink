@@ -37,61 +37,53 @@ class Prompts:
         - Focus on personal items and movable objects (keys, wallets, electronics, cups) rather than structural elements (walls, floors, windows) unless the structural element is a landmark.
         """
 
-    ANALYSES_FILTER_AGENT = \
+    STATE_CHANGE_AGENT = \
         """
         # Role
-        You are the Semantic State Deduplication Agent for an Object Permanence system. Your goal is to filter a chronological log of frame analyses and return a clean, deduplicated list representing distinct states of the world.
-        
+        You are a concise state-change detection agent for an Object Permanence system. Your goal is to determine if a significant change has occurred between two different snapshots of the world.
+
         # Input Data
-        You will receive a JSON list of `ObjectPermanenceObject` objects, each representing a detected object in a video feed.
-        
-        # The Definition of a "Duplicate"
-        A frame is considered a **Duplicate** (and must be discarded) if **ALL** objects in the frame satisfy the following conditions compared to the last *retained* frame:
-        
-        1.  **Identity Stability:** The object is semantically identical to an object in the previous frame (e.g., "red mug" is the same as "mug with red glaze").
-        2.  **State Stability:** The object's intrinsic state has not changed (e.g., it hasn't broken, opened, or changed color).
-        3.  **Spatial Stability (CRITICAL):** The object has not moved *relative to its environment*.
-            - **Ignore Camera Movement:** Changes in description like "in the center of the frame" vs "on the left side of the screen" are camera artifacts. Ignore them.
-            - **Rely on Landmarks:** If the object is still anchored to the same key landmarks (e.g., "next to the lamp"), it has NOT moved, even if the `location` text changes.
-        
-        # The Definition of a "New State" (Keep)
-        You must keep a frame if **ANY** of the following occur:
-        1.  **New Object:** A distinct, previously unseen object enters the scene.
-        2.  **Object Departure:** An object that was present is no longer detected at the place it previously was (implicit state change).
-        3.  **Displacement:** An object changes its relationship to landmarks (e.g., moves from "next to lamp" to "next to fridge").
-        4.  **Interaction:** A distinct change in how an object is being used (e.g., "mug on table" -> "mug held in hand").
-        
+        You will receive two JSON objects:
+        1. `previous_state`: A list of objects detected in the last saved frame. Can be null if this is the first frame.
+        2. `current_state`: A list of objects detected in the current frame.
+
+        # The Definition of a "Significant Change" (state_changed: true)
+        A significant change has occurred if **ANY** of the following are true:
+        1.  **New Object:** An object appears in `current_state` that was not in `previous_state`.
+        2.  **Object Departure:** An object from `previous_state` is missing from `current_state`.
+        3.  **Displacement:** An object moves. You must determine this by looking at its relationship to its `landmarks`. If an object's `landmarks` change, it has moved. Ignore minor changes in the `location` field if the landmarks are the same (this is likely just camera movement).
+        4.  **Interaction:** The way an object is described changes meaningfully (e.g., "cup on table" -> "cup in hand", "phone screen off" -> "phone screen on").
+
+        # The Definition of "No Significant Change" (state_changed: false)
+        The state is the same if **ALL** objects in `current_state` are semantically identical and in the same position relative to their landmarks as they were in `previous_state`.
+        - Ignore minor descriptive changes (e.g., "red mug" vs "red ceramic mug").
+        - Ignore camera panning/perspective shifts.
+
         # Instructions
-        1.  Iterate through the list chronologically.
-        2.  Always keep the first frame.
-        3.  For each subsequent frame, compare it against the *last retained frame*.
-        4.  If it is a Duplicate (per the rules above), discard it.
-        5.  If it represents a New State, keep it and treat it as the new baseline for comparison.
-        6.  Return the filtered list of objects in valid JSON.
-        7.  IGNORE THE formatted_description FIELD. DO NOT EVER ADD OR MODIFY ANYTHING TO IT.
+        1. If `previous_state` is null or empty, the `current_state` is automatically a significant change.
+        2. Compare the `current_state` to the `previous_state` based on the rules above.
+        3. Your output **MUST** be a single, valid JSON object with one key, "state_changed", and a boolean value.
+
+        # Example 1: Object Moved
+        "previous_state": [{"name": "keys", "landmarks": ["next to wallet"]}]
+        "current_state": [{"name": "keys", "landmarks": ["next to sunglasses"]}]
+        "output": {"state_changed": true}
+
+        # Example 2: No Change (Camera Pan)
+        "previous_state": [{"name": "keys", "location": "on the table", "landmarks": ["next to wallet"]}]
+        "current_state": [{"name": "keys", "location": "on the left side of the table", "landmarks": ["next to wallet"]}]
+        "output": {"state_changed": false}
         
-        # Few-Shot Examples
-        
-        ## Example 1: Camera Panning (Duplicate -> Discard)
-        **Frame A (Retained):** Object: "Keys", Location: "Center of table", Landmarks: ["Next to vase"]
-        **Frame B (Input):** Object: "Keys", Location: "Bottom left corner", Landmarks: ["Next to vase"]
-        **Reasoning:** The keys are still next to the vase. The location change is just camera perspective.
-        **Action:** Discard Frame B.
-        
-        ## Example 2: Movement (New State -> Keep)
-        **Frame A (Retained):** Object: "Keys", Location: "Center of table", Landmarks: ["Next to vase"]
-        **Frame B (Input):** Object: "Keys", Location: "Kitchen Counter", Landmarks: ["Next to microwave"]
-        **Reasoning:** Landmarks changed from "Vase" to "Microwave". The object physically moved.
-        **Action:** Keep Frame B.
-        
-        ## Example 3: New Detail/Refinement (Duplicate -> Discard)
-        **Frame A (Retained):** Object: "Mug", Description: "Red mug"
-        **Frame B (Input):** Object: "Mug", Description: "Red ceramic mug"
-        **Reasoning:** "Ceramic" is just extra detail, not a state change. The object didn't change.
-        **Action:** Discard Frame B.
-        
+        # Example 3: New Object
+        "previous_state": [{"name": "wallet"}]
+        "current_state": [{"name": "wallet"}, {"name": "keys"}]
+        "output": {"state_changed": true}
+
         # Output Format
-        Return **ONLY** the valid JSON list of `ObjectPermanenceObject` objects. Do not include markdown formatting or explanation text.
+        Respond with **ONLY** the JSON object.
+        {
+            "state_changed": boolean
+        }
         """
 
     FORMAT_ANALYSES_AGENT = \
