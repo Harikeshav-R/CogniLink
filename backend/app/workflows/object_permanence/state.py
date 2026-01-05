@@ -1,72 +1,53 @@
-from typing import Optional, Literal, List
+from typing import Literal, Optional
 
-from PIL import Image
-from pydantic import BaseModel, Field, ConfigDict
+from PIL.Image import Image
+from pydantic import Field
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
-class Object(BaseModel):
-    object_name: str = Field(
-        description="The name of the object. Specific name (e.g. 'Silver Car Keys', not just 'Keys')")
-    category: str = Field(
-        description="The category of the object: electronics | keys | wallet | eyewear | medication | stationery | other")
-    status: str = Field(description="The status of the object: held | worn | resting")
-    location_description: str = Field(
-        description="Precise relation to landmarks (e.g., 'on the white marble counter, next to the red mug').")
-    supporting_surface: str = Field(
-        description="The specific item underneath (e.g., 'Kitchen Table', 'Sofa Cushion', 'Floor').")
-    visual_details: str = Field(description="Distinguishing features (color, brand, condition).")
-    confidence: str = Field(description="high | medium | low")
+class ObjectPermanenceStateObject:
+    name: str = Field(
+        ...,
+        description="The name of the object (e.g., 'mug','backpack', 'keys', 'wallet', 'headphones')."
+    )
+    description: str = Field(
+        ...,
+        description="A concise but detailed description of the object using adjective to describe the object "
+                    "(e.g., 'small, red mug', 'old, green backpack', 'black toyota corolla keys', 'brown leather wallet with cards in it', 'pink bose quietcomfort headphones')."
+    )
+    location: str = Field(
+        ...,
+        description="The description of the location of the object (e.g., 'on the table', 'in the kitchen', 'in the living room')."
+    )
+    landmarks: list[str] = Field(
+        description="A list of precise relation to landmarks (e.g., 'on the white marble counter', 'next to the red mug', 'under the table lamp').",
+        default_factory=list
+    )
+    confidence: Literal["high", "medium", "low"] = Field(
+        ...,
+        description="The confidence level of the object detection (high, medium, low)."
+    )
 
 
-class StaticAnalysis(BaseModel):
-    scene_description: str = Field(
-        description="A brief 1-sentence summary of the context (e.g., 'A cluttered kitchen countertop with harsh lighting').")
-    objects: list[Object] = Field(description="A list of detected objects.", default_factory=list)
+class ObjectPermanenceAnalysis:
+    scene: str = Field(
+        ...,
+        description="A concise description of the scene (e.g., 'A cluttered kitchen countertop with harsh lighting, with a few personal items on the dining table in the kitchen')."
+    )
+    objects: list[ObjectPermanenceStateObject] = Field(
+        description="A list of detected objects in the scene.",
+        default_factory=list
+    )
 
 
-class Event(BaseModel):
-    event_type: str = Field(description="The type of event that occurred: placed | removed | moved")
-    object_name: str = Field(description="The name of the object that was affected.")
-    action_description: str = Field(
-        description="Natural language summary of the action (e.g. 'The user placed their reading glasses on the nightstand').")
-    location_context: str = Field(description="Where the interaction happened (e.g. 'The Nightstand').")
-    confidence: str = Field(description="high | medium | low")
-
-
-class DiffAnalysis(BaseModel):
-    events: list[Event] = Field(description="A list of detected events.", default_factory=list)
-
-
-class VideoAnalysis(BaseModel):
-    static_analysis: StaticAnalysis
-    diff_analysis: DiffAnalysis
-
-
-class FilteredEntry(BaseModel):
-    content: str = Field(description="The natural language description of the log entry.")
-    object_name: str = Field(description="The name of the object to log.")
-    log_type: Literal["state", "action"] = Field(description="The type of log entry: state | action")
-
-
-class FilteredResults(BaseModel):
-    entries: list[FilteredEntry] = Field(description="A list of filtered entries.", default_factory=list)
-
-
-class State(BaseModel):
-    # Inputs
-    video_path: str
-    frames: Optional[List[Image.Image]] = None
+class ObjectPermanenceState:
+    # Input
+    current_frame: Image = Field(..., description="The current frame to process.")
 
     # Internal
     db_session: AsyncSession
-    static_analysis: Optional[StaticAnalysis] = None
-    diff_analysis: Optional[DiffAnalysis] = None
-    filtered_results: Optional[FilteredResults] = None
 
-    # Outputs
-    save_status: bool = False
-
-    # Config
-    model_config = ConfigDict(arbitrary_types_allowed=True)
-
+    # Output
+    analysis: Optional[ObjectPermanenceAnalysis] = Field(
+        description="The analysis results."
+    )
