@@ -1,11 +1,11 @@
 from typing import Literal, Optional
 
 from PIL.Image import Image
-from pydantic import Field
+from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 
-class ObjectPermanenceStateObject:
+class ObjectPermanenceStateObject(BaseModel):
     name: str = Field(
         ...,
         description="The name of the object (e.g., 'mug','backpack', 'keys', 'wallet', 'headphones')."
@@ -29,7 +29,7 @@ class ObjectPermanenceStateObject:
     )
 
 
-class ObjectPermanenceAnalysis:
+class ObjectPermanenceAnalysis(BaseModel):
     scene: str = Field(
         ...,
         description="A concise description of the scene (e.g., 'A cluttered kitchen countertop with harsh lighting, with a few personal items on the dining table in the kitchen')."
@@ -40,9 +40,9 @@ class ObjectPermanenceAnalysis:
     )
 
 
-class ObjectPermanenceState:
+class ObjectPermanenceState(BaseModel, table=True):
     # Input
-    current_frame: Image = Field(..., description="The current frame to process.")
+    frame: Image = Field(..., description="The current frame to process.")
 
     # Internal
     db_session: AsyncSession
@@ -51,3 +51,6 @@ class ObjectPermanenceState:
     analysis: Optional[ObjectPermanenceAnalysis] = Field(
         description="The analysis results."
     )
+
+    # Config
+    model_config = ConfigDict(arbitrary_types_allowed=True)
