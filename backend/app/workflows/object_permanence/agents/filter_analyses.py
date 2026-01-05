@@ -13,7 +13,7 @@ from app.workflows.object_permanence.state import ObjectPermanenceState, ObjectP
 
 async def filter_analyses(state: ObjectPermanenceState) -> dict:
     if len(state.past_analyses) + len(state.analyses) < 100:
-        return {"filtered_analyses": state.past_analyses + state.analyses}
+        return {"analyses_buffer": state.past_analyses + state.analyses}
 
     logger.debug("Initializing chat model for frame analysis...")
     model = init_pollinations_chat_model(
