@@ -2,7 +2,6 @@ from typing import Literal, Optional
 
 from PIL.Image import Image
 from pydantic import BaseModel, ConfigDict, Field
-from sqlmodel.ext.asyncio.session import AsyncSession
 
 
 class ObjectPermanenceStateObject(BaseModel):
@@ -43,9 +42,6 @@ class ObjectPermanenceAnalysis(BaseModel):
 class ObjectPermanenceState(BaseModel, table=True):
     # Input
     frame: Image = Field(..., description="The current frame to process.")
-
-    # Internal
-    db_session: AsyncSession
 
     # Output
     analysis: Optional[ObjectPermanenceAnalysis] = Field(
