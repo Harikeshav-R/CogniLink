@@ -12,6 +12,19 @@ from app.workflows.object_permanence.state import ObjectPermanenceState, ObjectP
 
 
 async def analyze_frames(state: ObjectPermanenceState) -> dict:
+    """
+    Asynchronously analyzes the given frame using a pre-initialized agent, leveraging a
+    chat model for object permanence analysis. The function prepares the input frame,
+    configures the agent, and invokes it to perform the required analysis. It extracts
+    the results in a structured format upon completion.
+
+    :param state: The state object containing the frame to analyze. The frame is expected
+        to be in a compatible format for encoding and transmission.
+    :type state: ObjectPermanenceState
+
+    :return: A dictionary containing the results of the object permanence analysis.
+    :rtype: dict
+    """
     logger.trace("Entering analyze_frames function")
 
     if not state.frame:
