@@ -1,134 +1,78 @@
-import threading
-import uuid
-from collections import deque
-
-from PIL.Image import Image
+import asyncio
+from typing import Any, Tuple, Optional
 from loguru import logger
 
 
 class FrameBroadcaster:
     """
-    A thread-safe singleton class for broadcasting image frames to multiple subscribers.
-    Each subscriber receives frames on an independent queue, preventing slow consumers
-    from blocking others.
+    A class that manages the broadcasting of video frames to multiple consumers.
     """
-    _instance = None
-    _lock = threading.Lock()
 
-    def __new__(cls):
-        """
-        Creates or returns the singleton instance of the FrameBroadcaster.
-        This ensures that there is only one frame broadcaster throughout the application,
-        providing a single point for frame distribution.
-        """
-        if cls._instance is None:
-            logger.debug("FrameBroadcaster instance not found, creating a new one.")
-            with cls._lock:
-                logger.trace("Acquired lock for singleton creation.")
-                if cls._instance is None:
-                    cls._instance = super(FrameBroadcaster, cls).__new__(cls)
-                    # Dictionary to hold subscriber queues: { subscriber_id: deque }
-                    cls._instance.subscribers = {}
-                    logger.info("FrameBroadcaster singleton instance created.")
-                else:
-                    logger.debug("Singleton instance already created by another thread.")
-                logger.trace("Released lock for singleton creation.")
-        else:
-            logger.trace("Returning existing FrameBroadcaster instance.")
-        return cls._instance
+    def __init__(self):
+        self._current_frame: Optional[Any] = None
+        self._version: int = 0
+        self._condition = asyncio.Condition()
+        self.is_running: bool = True
+        logger.debug("FrameBroadcaster initialized.")
 
-    def subscribe(self, name: str = "agent") -> str:
+    async def update_frame(self, frame: Any) -> None:
         """
-        Registers a new subscriber and provides them with a unique subscription ID
-        and a dedicated frame queue.
+        Updates the current frame and notifies all waiting consumers.
 
-        :param name: An optional name for the subscriber for easier identification in logs.
-        :type name: str
-        :return: A unique subscription ID string.
-        :rtype: str
-        """
-        sub_id = f"{name}_{uuid.uuid4().hex[:8]}"
-        logger.info(f"New subscription request from '{name}'. Generated ID: {sub_id}")
-        with self._lock:
-            logger.trace(f"Acquired lock to register subscriber {sub_id}.")
-            # Each subscriber gets its own buffer. If one is slow, it won't block others,
-            # but it will drop its own oldest frames if the deque fills up (maxlen=5).
-            self.subscribers[sub_id] = deque(maxlen=5)
-            logger.debug(f"Subscriber {sub_id} registered with a new deque (maxlen=5).")
-            logger.trace(f"Released lock after registering subscriber {sub_id}.")
-        logger.info(f"📡 Subscriber '{sub_id}' successfully registered. Total subscribers: {len(self.subscribers)}")
-        return sub_id
-
-    def unsubscribe(self, sub_id: str):
-        """
-        Removes a subscriber and their associated queue from the broadcaster.
-
-        :param sub_id: The subscription ID of the subscriber to remove.
-        :type sub_id: str
+        :param frame: The new video frame to be broadcasted.
+        :type frame: Any
         :return: None
         :rtype: None
         """
-        logger.info(f"Unsubscribe request for ID: {sub_id}")
-        with self._lock:
-            logger.trace(f"Acquired lock to unsubscribe subscriber {sub_id}.")
-            if sub_id in self.subscribers:
-                del self.subscribers[sub_id]
-                logger.info(f"Subscriber '{sub_id}' successfully unsubscribed.")
-            else:
-                logger.warning(f"Attempted to unsubscribe non-existent subscriber ID: {sub_id}")
-            logger.trace(f"Released lock after unsubscribing subscriber {sub_id}.")
-        logger.debug(f"Total subscribers remaining: {len(self.subscribers)}")
+        async with self._condition:
+            self._current_frame = frame
+            self._version += 1
+            logger.trace(f"Frame updated to version {self._version}.")
+            self._condition.notify_all()
 
-    def broadcast(self, frame: Image):
+    async def get_latest_frame(self, last_version: int) -> Tuple[Any, int]:
         """
-        Distributes a frame to all currently registered subscribers by adding
-        it to each of their queues.
+        Waits for a new frame version and returns the latest frame and its version.
 
-        :param frame: The PIL Image frame to be broadcast.
-        :type frame: Image
+        :param last_version: The version of the last frame processed by the consumer.
+        :type last_version: int
+        :return: A tuple containing the latest frame and its version.
+        :rtype: Tuple[Any, int]
+        """
+        async with self._condition:
+            while self.is_running and self._version <= last_version:
+                logger.trace(f"Consumer waiting for version > {last_version}. Current: {self._version}")
+                await self._condition.wait()
+
+            if not self.is_running:
+                logger.debug(f"get_latest_frame interrupted: Broadcaster is no longer running. Returning current state (v{self._version}).")
+                return self._current_frame, self._version
+
+            logger.debug(f"Consumer retrieving new frame version: {self._version}")
+            return self._current_frame, self._version
+
+    def stop(self) -> None:
+        """
+        Stops the broadcaster and notifies all waiting consumers.
+
         :return: None
         :rtype: None
         """
-        logger.debug(f"Request to broadcast a new frame of size {frame.size}.")
-        with self._lock:
-            logger.trace("Acquired lock to broadcast frame.")
-            subscriber_count = len(self.subscribers)
-            if subscriber_count > 0:
-                logger.debug(f"Broadcasting frame to {subscriber_count} subscriber(s).")
-                for sub_id, queue in self.subscribers.items():
-                    queue.append(frame)
-                    logger.trace(f"Appended frame to queue for subscriber '{sub_id}'.")
+        logger.info("Stopping FrameBroadcaster and notifying all consumers.")
+        self.is_running = False
+        # We need to notify all waiting tasks so they can exit their wait loops
+        # This requires an event loop, so if called from sync code, it might need handling.
+        # Assuming this is called within the same thread/loop context or we use thread-safe notification.
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                asyncio.run_coroutine_threadsafe(self._notify_stop(), loop)
             else:
-                logger.debug("No subscribers to broadcast to.")
-            logger.trace("Released lock after broadcasting frame.")
+                logger.warning("Event loop not running; consumers might remain suspended.")
+        except RuntimeError:
+            logger.error("No event loop found while attempting to stop broadcaster.")
 
-    def get_frame(self, sub_id: str) -> Image | None:
-        """
-        Retrieves the next frame from a specific subscriber's queue.
-        This is a non-blocking, thread-safe operation that returns a frame
-        if one is available, otherwise returns None.
-
-        :param sub_id: The unique ID of the subscriber.
-        :type sub_id: str
-        :return: A PIL Image frame, or None if the queue is empty.
-        :rtype: Image | None
-        """
-        logger.trace(f"Frame request from subscriber: {sub_id}")
-        queue = self.subscribers.get(sub_id)
-        if queue:
-            try:
-                # popleft() is an atomic operation in Python's deque
-                frame = queue.popleft()
-                logger.debug(f"Retrieved frame for subscriber {sub_id}. Remaining queue size: {len(queue)}")
-                return frame
-            except IndexError:
-                logger.trace(f"No frame available for subscriber {sub_id} (queue is empty).")
-                return None
-        else:
-            logger.warning(f"Subscriber '{sub_id}' not found when trying to get a frame.")
-            return None
-
-
-# Global Instance
-logger.debug("Creating global instance of FrameBroadcaster.")
-frame_broadcaster = FrameBroadcaster()
+    async def _notify_stop(self) -> None:
+        async with self._condition:
+            self._condition.notify_all()
+            logger.debug("Broadcasted stop signal to all consumers.")
