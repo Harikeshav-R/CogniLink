@@ -13,7 +13,7 @@ def create_compiled_state_graph() -> CompiledStateGraph:
     """
     Creates and compiles a state graph for object permanence.
 
-    This function initializes a StateGraph instance using the ObjectPermanenceState,
+    This function initializes a StateGraph instance using the ObjectPermanenceWorkflowState,
     adds necessary nodes to the graph, establishes its entry and finish points, and
     compiles the graph. The compiled state graph is then returned.
 
