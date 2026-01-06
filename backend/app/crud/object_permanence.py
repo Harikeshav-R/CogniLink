@@ -1,57 +1,47 @@
-from loguru import logger
 from sqlmodel.ext.asyncio.session import AsyncSession
+from loguru import logger
 
 from app.models.object_permanence import ObjectPermanence
 
 
 async def create_log_entry(
         db: AsyncSession,
-        content: str,
-        embedding: list[float],
         timestamp: float,
         object_name: str,
-        log_type: str
+        description: str,
+        embedding: list[float]
 ):
-    """
-    Creates and stores a log entry in the database. The log entry includes content,
-    embedding data, a timestamp, the associated object name, and its type. The
-    entry is committed to the database and the changes are refreshed to ensure the
-    latest state of the log entry is returned.
+    logger.info("Creating new object permanence log entry for object: '{}'", object_name)
+    logger.debug("Log details - Timestamp: {}, Description length: {}, Embedding size: {}",
+                 timestamp, len(description), len(embedding))
 
-    :param db: The database session used to perform the operation.
-    :type db: AsyncSession
-    :param content: The textual information of the log entry.
-    :type content: str
-    :param embedding: A list of floating-point numbers representing the embedding
-        associated with the log entry.
-    :type embedding: list[float]
-    :param timestamp: The timestamp indicating when the log entry was created or
-        recorded.
-    :type timestamp: float
-    :param object_name: The name of the object associated with this log entry.
-    :type object_name: str
-    :param log_type: The type or category of the log entry.
-    :type log_type: str
-    :return: The newly created log entry after being added to the database.
-    :rtype: ObjectPermanence
-    """
-    logger.info(f"Creating log entry for object: {object_name} of type: {log_type}")
-    logger.debug(f"Log entry content: {content}")
-    logger.debug(f"Log entry timestamp: {timestamp}")
+    logger.trace("Instantiating ObjectPermanence model...")
     db_log = ObjectPermanence(
-        content=content,
-        embedding=embedding,
         timestamp=timestamp,
         object_name=object_name,
-        log_type=log_type
+        description=description,
+        embedding=embedding
     )
-    logger.debug("Log entry object created: {db_log}", db_log=db_log)
-    db.add(db_log)
-    logger.debug("Log entry added to the database session.")
-    await db.commit()
-    logger.debug("Database session committed.")
-    await db.refresh(db_log)
-    logger.debug("Log entry refreshed from the database.")
+    logger.trace("ObjectPermanence instance created: {}", db_log)
 
-    logger.info(f"Successfully created log entry for object: {object_name}")
+    logger.trace("Adding new ObjectPermanence instance to the session.")
+    db.add(db_log)
+
+    try:
+        logger.debug("Committing transaction to database...")
+        await db.commit()
+        logger.trace("Commit successful.")
+
+        logger.debug("Refreshing instance from database to retrieve generated fields (e.g., ID).")
+        await db.refresh(db_log)
+        logger.trace("Instance refreshed: {}", db_log)
+
+        logger.success("Successfully created log entry with ID: {}", db_log.id)
+    except Exception as e:
+        logger.error("Failed to create object permanence log entry.", exc_info=True)
+        logger.trace("Rolling back transaction...")
+        await db.rollback()
+        raise e
+
+    logger.trace("Returning created log entry.")
     return db_log
