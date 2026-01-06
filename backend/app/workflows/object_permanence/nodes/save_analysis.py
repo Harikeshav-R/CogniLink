@@ -1,10 +1,9 @@
 import time
 
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from loguru import logger
 
-from app.core.config import Config
 from app.crud.object_permanence import create_log_entry
+from app.shared.model_factory import init_embeddings_model
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState
 
 
@@ -18,13 +17,7 @@ async def save_analysis(state: ObjectPermanenceWorkflowState) -> dict:
 
     current_time = time.time()
 
-    logger.debug("Initializing embedding model...")
-    embeddings_model = GoogleGenerativeAIEmbeddings(
-        model=Config.GEMINI_EMBEDDING_MODEL,
-        google_api_key=Config.GEMINI_API_KEY,
-        vertexai=False
-    )
-    logger.debug("Embedding model initialized.")
+    embeddings_model = init_embeddings_model()
 
     # Filter out any entries where a description wasn't generated
     valid_indices = [i for i, desc in enumerate(state.generated_descriptions) if desc]
