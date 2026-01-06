@@ -10,7 +10,7 @@ async def create_log_entry(
         object_name: str,
         description: str,
         embedding: list[float]
-):
+) -> ObjectPermanence:
     logger.info("Creating new object permanence log entry for object: '{}'", object_name)
     logger.debug("Log details - Timestamp: {}, Description length: {}, Embedding size: {}",
                  timestamp, len(description), len(embedding))
