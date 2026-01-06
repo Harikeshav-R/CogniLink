@@ -15,7 +15,7 @@ class FrameBroadcaster:
         self.is_running: bool = True
         logger.debug("FrameBroadcaster initialized.")
 
-    async def update_frame(self, frame: Any) -> None:
+    async def publish_frame(self, frame: Any) -> None:
         """
         Updates the current frame and notifies all waiting consumers.
 
