@@ -8,6 +8,20 @@ from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowStat
 
 
 async def save_analysis(state: ObjectPermanenceWorkflowState) -> dict:
+    """
+    Saves analysis data to the database by processing unique objects and their associated
+    descriptions from the given workflow state.
+
+    This function verifies the presence of unique objects and a valid database session
+    before attempting to save data. It filters out invalid descriptions, generates
+    embeddings for valid descriptions, and logs the results to persistent storage.
+
+    :param state: The workflow state containing unique objects, generated descriptions, and
+        a database session.
+    :type state: ObjectPermanenceWorkflowState
+    :return: A dictionary containing the final status of the storage operation.
+    :rtype: dict
+    """
     if not state.unique_objects:
         return {"final_storage_status": "Skipped (No new objects)"}
 

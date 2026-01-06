@@ -78,7 +78,16 @@ def init_pollinations_chat_model(model: str, api_key: str) -> BaseChatModel:
 @lru_cache(maxsize=None)
 def init_embeddings_model() -> GoogleGenerativeAIEmbeddings:
     """
-    Initializes and returns a cached instance of the GoogleGenerativeAIEmbeddings model.
+    Initializes and returns an instance of the Google Generative AI Embeddings model.
+
+    The function sets up a Google Generative AI Embeddings model with configuration
+    parameters such as the model name and API key retrieved from the application's
+    configuration settings. This function utilizes an LRU (least recently used) cache to
+    optimize repeated calls and avoid reinitialization.
+
+    :return: An instance of the GoogleGenerativeAIEmbeddings configured with the
+             specified model name and API key.
+    :rtype: GoogleGenerativeAIEmbeddings
     """
     logger.info(f"Initializing embedding model: {Config.GEMINI_EMBEDDING_MODEL}")
     model = GoogleGenerativeAIEmbeddings(

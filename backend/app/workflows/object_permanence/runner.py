@@ -6,7 +6,19 @@ from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowStat
 from app.workflows.object_permanence.workflow import create_compiled_state_graph
 
 
-async def object_permanence_workflow_runner(broadcaster: FrameBroadcaster):
+async def object_permanence_workflow_runner(broadcaster: FrameBroadcaster) -> None:
+    """
+    Asynchronous function to execute the object permanence workflow in a continuous loop, processing
+    frames from a `FrameBroadcaster`. This function performs a stateful analysis of successive video
+    frames, leveraging a workflow state graph for structured processing. It maintains records of
+    processed versions, previously detected objects, and the last analyzed room for continuity
+    between frames. The loop continues execution while the `broadcaster.is_running` is set to True.
+
+    :param broadcaster: The instance of `FrameBroadcaster` providing video frames for processing.
+    :type broadcaster: FrameBroadcaster
+    :return: Coroutine that runs the object permanence workflow loop.
+    :rtype: Coroutine
+    """
     logger.info("Starting service_runner loop.")
     last_processed_version = 0
     previous_frame_objects: list[DetectedObject] = []

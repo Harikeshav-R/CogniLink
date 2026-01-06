@@ -8,7 +8,20 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.schemas import FrameAnalysis, ObjectPermanenceWorkflowState
 
 
-async def analyze_frame(state: ObjectPermanenceWorkflowState):
+async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
+    """
+    Analyzes the current frame stored in the state using a machine learning model. This function
+    utilizes an AI agent to process the encoded image from the frame and extracts structured
+    information, including scene and objects detected within the image.
+
+    :param state: The workflow state containing a base64-encoded representation of the current
+        video frame to be analyzed.
+    :type state: ObjectPermanenceWorkflowState
+
+    :return: A dictionary containing the results of the analysis, including structured information
+        about the detected scene and objects.
+    :rtype: dict
+    """
     if not state.current_frame_b64:
         return {}
 

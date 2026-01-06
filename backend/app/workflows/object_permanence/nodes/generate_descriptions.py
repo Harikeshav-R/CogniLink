@@ -8,7 +8,23 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState, DescriptionBatch
 
 
-async def generate_descriptions(state: ObjectPermanenceWorkflowState):
+async def generate_descriptions(state: ObjectPermanenceWorkflowState) -> dict:
+    """
+    Generate descriptions for a list of unique objects in the current workflow state.
+
+    This function processes the provided state to extract the unique objects and
+    formats them into a prompt for a language model. The function interacts with
+    a pre-defined model agent to generate descriptions of the objects in a
+    token-efficient and structured format. The generated descriptions are then
+    mapped back to their respective objects based on their indices.
+
+    :param state: The current workflow state containing objects and analysis
+        context required for description generation.
+    :type state: ObjectPermanenceWorkflowState
+    :return: A dictionary containing a list of generated descriptions, where
+        each description corresponds to an object in the input state.
+    :rtype: dict
+    """
     # Validation: If no objects, skip
     if not state.unique_objects:
         return {"generated_descriptions": []}

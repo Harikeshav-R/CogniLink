@@ -8,7 +8,23 @@ from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState, DeduplicationResult, DetectedObject
 
 
-async def deduplicate_objects(state: ObjectPermanenceWorkflowState):
+async def deduplicate_objects(state: ObjectPermanenceWorkflowState) -> dict:
+    """
+    Deduplicates objects between the current and previous frame of analysis in a scene, identifying
+    unique objects and updating the state with the deduplication results. This function uses
+    an external Large Language Model (LLM) to assist in determining uniqueness of objects based on
+    their properties.
+
+    :param state: The current workflow state containing details about the current frame's analysis,
+        previous frame's objects, and room context.
+    :type state: ObjectPermanenceWorkflowState
+
+    :return: A dictionary containing:
+        - "unique_objects": A list of objects identified as unique in the current analysis.
+        - "previous_frame_objects": The updated list of previous frame's objects for reference.
+        - "previous_room": The room name of the current analysis to track contextual changes.
+    :rtype: dict
+    """
     if not state.current_analysis:
         logger.warning("No current analysis found. Skipping deduplication.")
         return {"unique_objects": []}
