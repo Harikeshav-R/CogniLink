@@ -34,11 +34,6 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
     )
     logger.trace("Vision model initialized.")
 
-    # model = init_google_genai_chat_model(
-    #     Config.GEMINI_FAST_MODEL,
-    #     Config.GEMINI_API_KEY
-    # )
-
     logger.debug("Creating analysis agent with structured output (FrameAnalysis).")
     agent = create_agent(
         model=model,
@@ -69,7 +64,8 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
     structured_response: FrameAnalysis = response["structured_response"]
     logger.debug("Extracted structured response from agent output.")
 
-    logger.info(f"Scene Analysis - Room: '{structured_response.scene.room_name}', Summary: '{structured_response.scene.scene_summary}'")
+    logger.info(
+        f"Scene Analysis - Room: '{structured_response.scene.room_name}', Summary: '{structured_response.scene.scene_summary}'")
     logger.info(f"Object Detection - Found {len(structured_response.objects)} objects.")
     logger.trace(f"Detected objects: {structured_response.objects}")
 
