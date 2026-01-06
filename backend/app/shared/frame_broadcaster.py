@@ -53,26 +53,18 @@ class FrameBroadcaster:
 
     def stop(self) -> None:
         """
-        Stops the broadcaster and notifies all waiting consumers.
-
-        :return: None
-        :rtype: None
+        Stops the broadcaster and notifies all waiting consumers to exit.
         """
-        logger.info("Stopping FrameBroadcaster and notifying all consumers.")
-        self.is_running = False
-        # We need to notify all waiting tasks so they can exit their wait loops
-        # This requires an event loop, so if called from sync code, it might need handling.
-        # Assuming this is called within the same thread/loop context or we use thread-safe notification.
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                asyncio.run_coroutine_threadsafe(self._notify_stop(), loop)
-            else:
-                logger.warning("Event loop not running; consumers might remain suspended.")
-        except RuntimeError:
-            logger.error("No event loop found while attempting to stop broadcaster.")
+        async def _notify():
+            async with self._condition:
+                self.is_running = False
+                self._condition.notify_all()
+                logger.info("Stop signal broadcasted to all consumers.")
 
-    async def _notify_stop(self) -> None:
-        async with self._condition:
-            self._condition.notify_all()
-            logger.debug("Broadcasted stop signal to all consumers.")
+        logger.info("Stopping FrameBroadcaster...")
+        try:
+            # Schedule the notification on the running event loop
+            asyncio.create_task(_notify())
+        except RuntimeError as e:
+            logger.error(f"Could not schedule stop notification: {e}. "
+                         f"This may happen if the event loop is not running.")
