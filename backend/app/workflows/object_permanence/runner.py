@@ -70,7 +70,6 @@ async def object_permanence_workflow_runner(broadcaster: FrameBroadcaster) -> No
                         previous_room = current_analysis.scene.room_name
                         logger.trace(f"Updated previous_room to '{previous_room}'.")
                     else:
-
                         logger.trace("No current analysis in final state, previous_room remains unchanged.")
                 else:
                     logger.warning("Workflow returned a null or invalid final_state. Runner state will not be updated.")
