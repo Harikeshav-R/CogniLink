@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage
 from loguru import logger
 
 from app.core.config import Config
@@ -39,9 +39,16 @@ async def generate_descriptions(state: ObjectPermanenceWorkflowState):
     )
 
     response: DescriptionBatch = await agent.ainvoke(
-        HumanMessage(
-            content=f"Global Room: {state.current_analysis.scene.room_name}\nObjects to Describe: {prompt_input}")
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": f"Global Room: {state.current_analysis.scene.room_name}\nObjects to Describe: {prompt_input}"
+                }
+            ]
+        }
     )
+    response: DescriptionBatch = response["structured_response"]
 
     desc_map = {d.object_index: d.searchable_text for d in response.descriptions}
     final_texts = [desc_map.get(i, "") for i in range(len(state.unique_objects))]
