@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
 from loguru import logger
@@ -34,6 +35,7 @@ async def init_db() -> None:
     logger.info("Database initialization complete.")
 
 
+@asynccontextmanager
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Asynchronous generator that provides a database session.
