@@ -58,7 +58,7 @@ if Config.DEBUG:
     )
 
 # Include API routers
-app.include_router(websockets_router, prefix="/api", tags=["WebSockets"])
+app.include_router(websockets_router, prefix="/api/ws", tags=["WebSockets"])
 
 
 @app.get("/")
