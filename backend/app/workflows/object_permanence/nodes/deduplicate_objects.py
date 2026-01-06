@@ -1,5 +1,5 @@
 from langchain.agents import create_agent
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage
 from loguru import logger
 
 from app.core.config import Config
@@ -48,13 +48,19 @@ async def deduplicate_objects(state: ObjectPermanenceWorkflowState):
         ),
     )
 
-    decision: DeduplicationResult = await agent.ainvoke(
-        HumanMessage(
-            content=[
-                {"type": "text", "text": prompt}
+    decision = await agent.ainvoke(
+        {
+            "messages": [
+                {
+                    "role": "user",
+                    "content": [
+                        {"type": "text", "text": prompt}
+                    ]
+                }
             ]
-        )
+        }
     )
+    decision: DeduplicationResult = decision["structured_response"]
 
     # 4. Filter
     unique_objs: list[DetectedObject] = []
