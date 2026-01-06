@@ -23,21 +23,27 @@ def init_google_genai_chat_model(model: str, api_key: str) -> BaseChatModel:
     :return: An initialized chat model instance.
     :rtype: BaseChatModel
     """
-    logger.info(f"Initializing Google GenAI chat model: {model}")
+    logger.trace(f"Request to initialize Google GenAI chat model: {model}")
+    # The lru_cache will return a cached instance if available.
+    # The following logs will only appear on the first call for a given set of arguments.
+    logger.info(f"Initializing new Google GenAI chat model instance: {model}")
     logger.debug(f"Using provider: {Config.GEMINI_PROVIDER}")
+
     if not api_key:
         logger.error("Google GenAI API key is missing.")
         raise ValueError("API key for Google GenAI must be provided.")
+
     try:
+        logger.trace(f"Calling init_chat_model with model='{model}', provider='{Config.GEMINI_PROVIDER}'")
         chat_model = init_chat_model(
             model=model,
             model_provider=Config.GEMINI_PROVIDER,
             api_key=api_key
         )
-        logger.info(f"Successfully initialized Google GenAI model: {model}")
+        logger.success(f"Successfully initialized Google GenAI model: {model}")
         return chat_model
     except Exception as e:
-        logger.error(f"Failed to initialize Google GenAI model '{model}': {e}")
+        logger.error(f"Failed to initialize Google GenAI model '{model}': {e}", exc_info=True)
         raise
 
 
@@ -56,22 +62,27 @@ def init_pollinations_chat_model(model: str, api_key: str) -> BaseChatModel:
     :return: An initialized chat model instance.
     :rtype: BaseChatModel
     """
-    logger.info(f"Initializing Pollinations chat model: {model}")
+    logger.trace(f"Request to initialize Pollinations chat model: {model}")
+    # The lru_cache will return a cached instance if available.
+    logger.info(f"Initializing new Pollinations chat model instance: {model}")
     logger.debug(f"Using provider: {Config.POLLINATIONS_PROVIDER} and endpoint: {Config.POLLINATIONS_ENDPOINT}")
+
     if not api_key:
         logger.error("Pollinations API key is missing.")
         raise ValueError("API key for Pollinations must be provided.")
+
     try:
+        logger.trace(f"Calling init_chat_model with model='{model}', provider='{Config.POLLINATIONS_PROVIDER}', base_url='{Config.POLLINATIONS_ENDPOINT}'")
         chat_model = init_chat_model(
             model=model,
             model_provider=Config.POLLINATIONS_PROVIDER,
             api_key=api_key,
             base_url=Config.POLLINATIONS_ENDPOINT
         )
-        logger.info(f"Successfully initialized Pollinations model: {model}")
+        logger.success(f"Successfully initialized Pollinations model: {model}")
         return chat_model
     except Exception as e:
-        logger.error(f"Failed to initialize Pollinations model '{model}': {e}")
+        logger.error(f"Failed to initialize Pollinations model '{model}': {e}", exc_info=True)
         raise
 
 
@@ -89,11 +100,19 @@ def init_embeddings_model() -> GoogleGenerativeAIEmbeddings:
              specified model name and API key.
     :rtype: GoogleGenerativeAIEmbeddings
     """
-    logger.info(f"Initializing embedding model: {Config.GEMINI_EMBEDDING_MODEL}")
-    model = GoogleGenerativeAIEmbeddings(
-        model=Config.GEMINI_EMBEDDING_MODEL,
-        google_api_key=Config.GEMINI_API_KEY,
-        vertexai=False
-    )
-    logger.info("Embedding model initialized.")
-    return model
+    logger.trace("Request to initialize embedding model.")
+    # The lru_cache will return a cached instance if available.
+    logger.info(f"Initializing new embedding model instance: {Config.GEMINI_EMBEDDING_MODEL}")
+
+    try:
+        logger.trace(f"Instantiating GoogleGenerativeAIEmbeddings with model='{Config.GEMINI_EMBEDDING_MODEL}'")
+        model = GoogleGenerativeAIEmbeddings(
+            model=Config.GEMINI_EMBEDDING_MODEL,
+            google_api_key=Config.GEMINI_API_KEY,
+            vertexai=False
+        )
+        logger.success("Embedding model initialized successfully.")
+        return model
+    except Exception as e:
+        logger.error(f"Failed to initialize embedding model: {e}", exc_info=True)
+        raise

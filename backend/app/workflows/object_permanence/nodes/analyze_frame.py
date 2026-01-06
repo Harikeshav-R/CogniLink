@@ -22,19 +22,24 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
         about the detected scene and objects.
     :rtype: dict
     """
+    logger.trace("Entering 'analyze_frame' node.")
     if not state.current_frame_b64:
+        logger.warning("No frame data in state ('current_frame_b64' is empty). Skipping analysis.")
         return {}
 
+    logger.debug(f"Frame has size: {len(state.current_frame_b64)} bytes. Initializing vision model...")
     model = init_pollinations_chat_model(
         Config.POLLINATIONS_VISION_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+    logger.trace("Vision model initialized.")
 
     # model = init_google_genai_chat_model(
     #     Config.GEMINI_FAST_MODEL,
     #     Config.GEMINI_API_KEY
     # )
 
+    logger.debug("Creating analysis agent with structured output (FrameAnalysis).")
     agent = create_agent(
         model=model,
         response_format=FrameAnalysis,
@@ -42,7 +47,9 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
             content=Prompts.ANALYZE_FRAME
         ),
     )
+    logger.trace("Analysis agent created.")
 
+    logger.debug("Invoking agent to analyze frame...")
     response = await agent.ainvoke(
         {
             "messages": [
@@ -57,9 +64,14 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
             ]
         }
     )
-    response: FrameAnalysis = response["structured_response"]
+    logger.trace(f"Agent invocation complete. Full response: {response}")
 
-    logger.info(f"Detected Room: {response.scene.room_name}")
-    logger.info(f"Detected {len(response.objects)} objects.")
+    structured_response: FrameAnalysis = response["structured_response"]
+    logger.debug("Extracted structured response from agent output.")
 
-    return {"current_analysis": response}
+    logger.info(f"Scene Analysis - Room: '{structured_response.scene.room_name}', Summary: '{structured_response.scene.scene_summary}'")
+    logger.info(f"Object Detection - Found {len(structured_response.objects)} objects.")
+    logger.trace(f"Detected objects: {structured_response.objects}")
+
+    logger.trace("Exiting 'analyze_frame' node with new analysis.")
+    return {"current_analysis": structured_response}

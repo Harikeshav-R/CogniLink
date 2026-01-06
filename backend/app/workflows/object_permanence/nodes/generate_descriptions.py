@@ -25,12 +25,17 @@ async def generate_descriptions(state: ObjectPermanenceWorkflowState) -> dict:
         each description corresponds to an object in the input state.
     :rtype: dict
     """
+    logger.trace("Entering 'generate_descriptions' node.")
     # Validation: If no objects, skip
     if not state.unique_objects:
+        logger.warning("No unique objects in state. Skipping description generation.")
         return {"generated_descriptions": []}
+
+    logger.debug(f"Found {len(state.unique_objects)} unique objects to describe.")
 
     # Format the input for the LLM to be token-efficient
     # We pass the index 'i' so the LLM can map it back in the response
+    logger.trace("Formatting objects into token-efficient prompt input.")
     prompt_input = []
     for i, obj in enumerate(state.unique_objects):
         prompt_input.append({
@@ -39,13 +44,17 @@ async def generate_descriptions(state: ObjectPermanenceWorkflowState) -> dict:
             "visuals": obj.visual_description,
             "landmarks": obj.landmarks
         })
+    logger.trace(f"Formatted prompt input: {prompt_input}")
 
     # Invoke
+    logger.debug("Initializing model for description generation...")
     model = init_pollinations_chat_model(
         Config.POLLINATIONS_VISION_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+    logger.trace("Model initialized.")
 
+    logger.debug("Creating description generation agent with structured output (DescriptionBatch).")
     agent = create_agent(
         model=model,
         response_format=DescriptionBatch,
@@ -53,21 +62,38 @@ async def generate_descriptions(state: ObjectPermanenceWorkflowState) -> dict:
             content=Prompts.GENERATE_DESCRIPTIONS
         ),
     )
+    logger.trace("Agent created.")
 
-    response: DescriptionBatch = await agent.ainvoke(
+    user_prompt = f"Global Room: {state.current_analysis.scene.room_name}\nObjects to Describe: {prompt_input}"
+    logger.trace(f"User prompt for agent: {user_prompt}")
+
+    logger.debug("Invoking agent to generate descriptions...")
+    response = await agent.ainvoke(
         {
             "messages": [
                 {
                     "role": "user",
-                    "content": f"Global Room: {state.current_analysis.scene.room_name}\nObjects to Describe: {prompt_input}"
+                    "content": user_prompt
                 }
             ]
         }
     )
-    response: DescriptionBatch = response["structured_response"]
+    logger.trace(f"Agent invocation complete. Full response: {response}")
 
-    desc_map = {d.object_index: d.searchable_text for d in response.descriptions}
+    structured_response: DescriptionBatch = response["structured_response"]
+    logger.debug(f"Extracted {len(structured_response.descriptions)} descriptions from agent response.")
+
+    desc_map = {d.object_index: d.searchable_text for d in structured_response.descriptions}
+    logger.trace(f"Created description map from response: {desc_map}")
+
+    # Ensure final_texts has the same length as unique_objects, with empty strings for missing descriptions
     final_texts = [desc_map.get(i, "") for i in range(len(state.unique_objects))]
+    for i, text in enumerate(final_texts):
+        if not text:
+            logger.warning(f"Agent did not generate a description for object at index {i}. It will be skipped during save.")
 
-    logger.info(f"-> Generated {len(final_texts)} descriptions.")
+    logger.info(f"Successfully generated {sum(1 for t in final_texts if t)} descriptions for {len(state.unique_objects)} unique objects.")
+    logger.trace(f"Final generated descriptions list: {final_texts}")
+
+    logger.trace("Exiting 'generate_descriptions' node.")
     return {"generated_descriptions": final_texts}
