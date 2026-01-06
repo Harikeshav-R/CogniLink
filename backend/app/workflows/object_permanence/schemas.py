@@ -19,13 +19,13 @@ class GlobalScene(BaseModel):
 
 class FrameAnalysis(BaseModel):
     scene: GlobalScene = Field(..., description="The global context of the frame.")
-    objects: list[DetectedObject] = Field(description="list of objects detected.", default_factory=list)
+    objects: list[DetectedObject] = Field(description="List of objects detected.", default_factory=list)
 
 
 # --- Model for Node 2 (Deduplication Logic) ---
 class DeduplicationResult(BaseModel):
     unique_object_indices: list[int] = Field(
-        description="list of indices from the 'current_objects' input that represent NEW or CHANGED items.",
+        description="List of indices from the 'current_objects' input that represent NEW or CHANGED items.",
         default_factory=list
     )
     reasoning: str = Field(..., description="Brief explanation of the decision.")
