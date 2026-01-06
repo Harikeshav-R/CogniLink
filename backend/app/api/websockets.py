@@ -3,7 +3,7 @@ from loguru import logger
 
 from app.shared.frame_broadcaster import FrameBroadcaster
 
-router = APIRouter(prefix="/ws", tags=["WebSockets"])
+router = APIRouter(tags=["WebSockets"])
 
 
 @router.websocket("/object-permanence")
