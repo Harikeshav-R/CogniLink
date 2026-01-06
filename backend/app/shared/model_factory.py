@@ -1,10 +1,14 @@
+from functools import lru_cache
+
 from langchain.chat_models import init_chat_model
 from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from loguru import logger
 
 from app.core.config import Config
 
 
+@lru_cache(maxsize=None)
 def init_google_genai_chat_model(model: str, api_key: str) -> BaseChatModel:
     """
     Initializes a Google Generative AI chat model using the specified model name and API key.
@@ -37,6 +41,7 @@ def init_google_genai_chat_model(model: str, api_key: str) -> BaseChatModel:
         raise
 
 
+@lru_cache(maxsize=None)
 def init_pollinations_chat_model(model: str, api_key: str) -> BaseChatModel:
     """
     Initializes a Pollinations chat model with the specified model name, API key, and endpoint.
@@ -68,3 +73,18 @@ def init_pollinations_chat_model(model: str, api_key: str) -> BaseChatModel:
     except Exception as e:
         logger.error(f"Failed to initialize Pollinations model '{model}': {e}")
         raise
+
+
+@lru_cache(maxsize=None)
+def init_embeddings_model() -> GoogleGenerativeAIEmbeddings:
+    """
+    Initializes and returns a cached instance of the GoogleGenerativeAIEmbeddings model.
+    """
+    logger.info(f"Initializing embedding model: {Config.GEMINI_EMBEDDING_MODEL}")
+    model = GoogleGenerativeAIEmbeddings(
+        model=Config.GEMINI_EMBEDDING_MODEL,
+        google_api_key=Config.GEMINI_API_KEY,
+        vertexai=False
+    )
+    logger.info("Embedding model initialized.")
+    return model
