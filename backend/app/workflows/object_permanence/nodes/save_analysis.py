@@ -2,6 +2,7 @@ import time
 
 from loguru import logger
 
+from app import get_session
 from app.crud.object_permanence import create_object_permanence_entry
 from app.shared.model_factory import init_embeddings_model
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState
@@ -26,10 +27,6 @@ async def save_analysis(state: ObjectPermanenceWorkflowState) -> dict:
     if not state.unique_objects:
         logger.warning("No unique objects in state. Skipping save.")
         return {"final_storage_status": "Skipped (No new objects)"}
-
-    if not state.db_session:
-        logger.error("Database session not found in workflow state. Cannot save analysis.")
-        return {"final_storage_status": "Failed (No DB session)"}
 
     logger.debug(f"Found {len(state.unique_objects)} unique objects to process for saving.")
     current_time = time.time()
@@ -59,21 +56,22 @@ async def save_analysis(state: ObjectPermanenceWorkflowState) -> dict:
 
     # Iterate through entries and their corresponding pre-computed embeddings
     logger.debug(f"Iterating through {len(valid_objects)} objects to create log entries in the database.")
-    for i, (entry, description, embedding) in enumerate(zip(valid_objects, valid_descriptions, all_embeddings)):
-        logger.trace(f"Processing object {i+1}/{len(valid_objects)}: '{entry.object_name}'")
-        try:
-            await create_object_permanence_entry(
-                state.db_session,
-                current_time,
-                entry.object_name,
-                description,
-                embedding,
-            )
-            logger.trace(f"Successfully created log entry for '{entry.object_name}'.")
-        except Exception as e:
-            logger.error(f"Failed to create log entry for object '{entry.object_name}'.", exc_info=True)
-            # Continue to the next entry to attempt to save as much as possible
-            continue
+    async with get_session() as db_session:
+        for i, (entry, description, embedding) in enumerate(zip(valid_objects, valid_descriptions, all_embeddings)):
+            logger.trace(f"Processing object {i + 1}/{len(valid_objects)}: '{entry.object_name}'")
+            try:
+                await create_object_permanence_entry(
+                    db_session,
+                    current_time,
+                    entry.object_name,
+                    description,
+                    embedding,
+                )
+                logger.trace(f"Successfully created log entry for '{entry.object_name}'.")
+            except Exception as e:
+                logger.error(f"Failed to create log entry for object '{entry.object_name}'.", exc_info=True)
+                # Continue to the next entry to attempt to save as much as possible
+                continue
 
     logger.success(f"Save analysis complete. Processed {len(valid_objects)} objects.")
     logger.trace("Exiting 'save_analysis' node.")
