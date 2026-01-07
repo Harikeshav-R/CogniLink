@@ -1,7 +1,6 @@
 from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class DetectedObject(BaseModel):
@@ -48,7 +47,6 @@ class ObjectPermanenceWorkflowState(BaseModel):
     previous_frame_objects: Optional[list[DetectedObject]] = Field(description="List of objects from previous frame.",
                                                                    default_factory=list)
     previous_room: Optional[str] = Field(description="Name of the previous room.", default=None)
-    db_session: AsyncSession = Field(exclude=True)
 
     # Internal
     current_analysis: Optional[FrameAnalysis] = Field(description="Analysis of the current frame.", default=None)
