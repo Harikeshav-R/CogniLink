@@ -3,7 +3,7 @@ FROM python:3.13-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-WORKDIR /backend
+WORKDIR /processor
 
 # Copy uv from the official image (efficient and standard)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
