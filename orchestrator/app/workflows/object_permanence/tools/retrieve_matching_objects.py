@@ -8,7 +8,7 @@ from app.shared.model_factory import init_embeddings_model
 
 
 @tool
-async def find_object_entries(query: str) -> str:
+async def retrieve_matching_objects(query: str) -> str:
     """
     Finds object entries in the database matching the specified query.
 
