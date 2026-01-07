@@ -1,0 +1,24 @@
+[project]
+name = "orchestrator"
+version = "0.1.0"
+description = "Orchestrator server for CogniLink"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi[standard]>=0.127.0",
+    "langchain>=1.2.0",
+    "langchain-google-genai>=4.1.2",
+    "langchain-openai>=1.1.6",
+    "langgraph>=1.0.5",
+    "loguru>=0.7.3",
+    "asyncpg>=0.29.0",
+    "pgvector>=0.4.2",
+    "sqlmodel>=0.0.29",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "pytest-asyncio>=0.23.7",
+    "pytest-mock>=3.12.0",
+]
