@@ -32,5 +32,21 @@ services:
       db:
         condition: service_healthy
 
+  orchestrator:
+    container_name: orchestrator_dev
+    build:
+      context: orchestrator
+      target: dev # Use the 'dev' stage from the orchestrator Dockerfile
+    volumes:
+      - ./orchestrator:/orchestrator # Mount local 'orchestrator' folder into the container
+      - /orchestrator/.venv # Don't mount local .venv, use the one in the container
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env.dev
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   postgres_dev_data:
