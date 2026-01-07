@@ -2,7 +2,7 @@ import time
 
 from loguru import logger
 
-from app.crud.object_permanence import create_log_entry
+from app.crud.object_permanence import create_object_permanence_entry
 from app.shared.model_factory import init_embeddings_model
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState
 
@@ -62,7 +62,7 @@ async def save_analysis(state: ObjectPermanenceWorkflowState) -> dict:
     for i, (entry, description, embedding) in enumerate(zip(valid_objects, valid_descriptions, all_embeddings)):
         logger.trace(f"Processing object {i+1}/{len(valid_objects)}: '{entry.object_name}'")
         try:
-            await create_log_entry(
+            await create_object_permanence_entry(
                 state.db_session,
                 current_time,
                 entry.object_name,
