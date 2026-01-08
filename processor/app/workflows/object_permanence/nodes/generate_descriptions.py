@@ -49,7 +49,7 @@ async def generate_descriptions(state: ObjectPermanenceWorkflowState) -> dict:
     # Invoke
     logger.debug("Initializing model for description generation...")
     model = init_pollinations_chat_model(
-        Config.POLLINATIONS_VISION_MODEL,
+        Config.POLLINATIONS_SMART_MODEL,
         Config.POLLINATIONS_API_KEY
     )
     logger.trace("Model initialized.")

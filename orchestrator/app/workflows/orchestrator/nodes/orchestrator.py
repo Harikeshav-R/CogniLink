@@ -9,7 +9,7 @@ from app.workflows.orchestrator.schemas import OrchestratorWorkflowState, Select
 
 async def orchestrator(state: OrchestratorWorkflowState) -> dict:
     model = init_pollinations_chat_model(
-        Config.POLLINATIONS_FAST_MODEL,
+        Config.POLLINATIONS_SMART_MODEL,
         Config.POLLINATIONS_API_KEY
     )
 
