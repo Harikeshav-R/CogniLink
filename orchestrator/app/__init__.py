@@ -1,80 +1,15 @@
-import asyncio
-from contextlib import asynccontextmanager
-
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Depends, FastAPI
 from loguru import logger
 from sqlalchemy import func
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
-from app.api.websockets import router as websockets_router
 from app.core.config import Config
 from app.core.db import get_session, init_db
-from app.shared.frame_broadcaster import FrameBroadcaster
-from app.workflows.object_permanence.runner import object_permanence_workflow_runner
+from app.workflows.orchestrator.schemas import OrchestratorWorkflowState
+from app.workflows.orchestrator.workflow import create_compiled_state_graph
 
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # On Startup
-    logger.info("Application lifespan starting...")
-    logger.trace("Initializing database...")
-    await init_db()
-    logger.info("Database initialization complete.")
-
-    # Set up the frame broadcaster and runner
-    logger.trace("Initializing FrameBroadcaster...")
-    frame_broadcaster = FrameBroadcaster()
-    app.state.frame_broadcaster = frame_broadcaster
-    logger.info("Frame broadcaster initialized and attached to app state.")
-
-    logger.trace("Creating background task for object permanence workflow...")
-    runner_task = asyncio.create_task(object_permanence_workflow_runner(frame_broadcaster))
-    logger.info("Object permanence workflow runner started as a background task.")
-
-    logger.trace("Yielding control to the application...")
-    yield
-    logger.trace("Control returned from application. Starting shutdown sequence.")
-
-    # On Shutdown
-    logger.info("Application lifespan shutting down...")
-    logger.trace("Stopping frame broadcaster...")
-    frame_broadcaster.stop()
-    logger.info("Frame broadcaster stopped.")
-
-    logger.trace("Cancelling object permanence workflow runner task...")
-    runner_task.cancel()
-    try:
-        await runner_task
-    except asyncio.CancelledError:
-        logger.info("Object permanence workflow runner task successfully cancelled.")
-    except Exception as e:
-        logger.error(f"An unexpected error occurred during workflow runner task cancellation: {e}", exc_info=True)
-    logger.success("Application shutdown complete.")
-
-
-app = FastAPI(lifespan=lifespan, title="CogniLink Backend", version="1.0.0")
-
-logger.trace("Checking DEBUG mode for CORS middleware configuration.")
-if Config.DEBUG:
-    logger.info("DEBUG mode is enabled. Adding CORS middleware for development.")
-    logger.trace(f"Allowed origins: {['http://localhost:5173', 'http://localhost:8000']}")
-    # CORS Middleware for development
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["http://localhost:5173", "http://localhost:8000"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-else:
-    logger.info("DEBUG mode is disabled. Skipping CORS middleware.")
-
-# Include API routers
-logger.trace("Including API routers...")
-app.include_router(websockets_router, prefix="/api/ws", tags=["WebSockets"])
-logger.debug("WebSockets router included with prefix '/api/ws'.")
+app = FastAPI()
 
 
 @app.get("/")
@@ -117,3 +52,12 @@ async def get_db_version(session: AsyncSession = Depends(get_session)):
     except Exception as e:
         logger.error(f"Database connection failed at '/api/db-version': {e}", exc_info=True)
         return {"error": f"Database connection failed: {e}"}
+
+
+@app.post("/api/query")
+async def generate_response(query: str):
+    workflow = create_compiled_state_graph()
+    initial_state = OrchestratorWorkflowState(query=query)
+    final_state: OrchestratorWorkflowState = await workflow.ainvoke(initial_state)
+    final_state = OrchestratorWorkflowState.model_validate(final_state)
+    return {"response": final_state.response}
