@@ -11,8 +11,7 @@ async def retrieve_matching_objects(state: ObjectPermanenceWorkflowState) -> dic
     query_vector = await embeddings_model.aembed_query(state.query)
 
     async with get_session() as db_session:
-        search_results = await read_object_permanence_entries_by_vector_search(db_session, query_vector,
-                                                                               state.number_of_entries_to_query)
+        search_results = await read_object_permanence_entries_by_vector_search(db_session, query_vector)
 
         if not search_results:
             return {
