@@ -4,14 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="" />
+    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="96" />
+    <option name="cachedIndexableFilesCount" value="91" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -80,7 +82,6 @@
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
     &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
@@ -91,7 +92,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
@@ -163,6 +164,8 @@
       <workItem from="1767824096617" duration="9682000" />
       <workItem from="1767837674363" duration="1881000" />
       <workItem from="1767900013749" duration="726000" />
+      <workItem from="1767900889305" duration="539000" />
+      <workItem from="1767901440886" duration="4822000" />
     </task>
     <task id="LOCAL-00001" summary="refactor(workflows): migrate `retrieve_matching_objects` to reusable node structure&#10;&#10;- Move `retrieve_matching_objects` from `tools` to `nodes` for better modularity.&#10;- Update function signature to use `ObjectPermanenceWorkflowState` schema.&#10;- Refactor return type to structured dictionary with query results encapsulated in `DbQueryOutput`.">
       <option name="closed" value="true" />
@@ -412,7 +415,23 @@
       <option name="project" value="LOCAL" />
       <updated>1767837617539</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Add IntelliJ IDEA project configuration files&#10;&#10;- Include `.idea` folder with settings for database navigator, inspection profiles, VCS mappings, and workspace configurations.">
+      <option name="closed" value="true" />
+      <created>1767900927334</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1767900927334</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Add GitToolBox project settings to IntelliJ configuration files">
+      <option name="closed" value="true" />
+      <created>1767900944398</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1767900944399</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -430,8 +449,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(workflows): add `GenerateAnswerOutput` model to enhance query response structure&#10;&#10;- Introduce `GenerateAnswerOutput` with fields `answer` and `object_was_found` for better output clarity.&#10;- Simplify `DbQueryOutput` by removing unused fields including `found_matching_entries` and `query_results_were_sufficient`." />
-    <MESSAGE value="feat(workflows): add `generate_answer` node to `object_permanence` workflow&#10;&#10;- Implement `generate_answer` function to produce structured responses using LLM-driven agents. &#10;- Integrate `ObjectPermanenceWorkflowState` and `GenerateAnswerOutput` schemas for seamless state management and output formatting." />
     <MESSAGE value="feat(workflows): implement `create_compiled_state_graph` for `object_permanence` workflow&#10;&#10;- Build state graph with nodes `retrieve_matching_objects` and `generate_answer`.&#10;- Define entry point, edges, and finish point.&#10;- Compile and return the finalized state graph." />
     <MESSAGE value="feat(workflows): add `OrchestratorWorkflowState` and `SelectedWorkflow` schemas&#10;&#10;- Introduce schemas to manage user query, selected workflow, and response structure.&#10;- Support workflows like `object_permanence` and `face_recognition`." />
     <MESSAGE value="feat(workflows): define `Prompts` class for routing user queries to workflows&#10;&#10;- Add `Prompts` class with decision logic and examples to match user inputs to `object_permanence` or `face_recognition` workflows.&#10;- Provide guidelines for prioritization, ambiguity resolution, and edge case handling." />
@@ -455,7 +472,9 @@
     <MESSAGE value="docs(workflows): add detailed docstrings for state graph creation, workflow execution, and CRUD operations" />
     <MESSAGE value="refactor(workflows): integrate detailed logging across nodes, workflows, and state graph creation" />
     <MESSAGE value="refactor(app): update app titles and integrate lifespan logic with CORS middleware" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(app): update app titles and integrate lifespan logic with CORS middleware" />
+    <MESSAGE value="Add IntelliJ IDEA project configuration files&#10;&#10;- Include `.idea` folder with settings for database navigator, inspection profiles, VCS mappings, and workspace configurations." />
+    <MESSAGE value="Add GitToolBox project settings to IntelliJ configuration files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add GitToolBox project settings to IntelliJ configuration files" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
