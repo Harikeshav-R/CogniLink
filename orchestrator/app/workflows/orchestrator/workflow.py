@@ -1,0 +1,34 @@
+from langgraph.graph import StateGraph
+from langgraph.graph.state import CompiledStateGraph
+
+from app.workflows.orchestrator.nodes.face_recognition_workflow import face_recognition_workflow
+from app.workflows.orchestrator.nodes.object_permanence_workflow import object_permanence_workflow
+from app.workflows.orchestrator.nodes.orchestrator import orchestrator
+from app.workflows.orchestrator.nodes.router import router
+from app.workflows.orchestrator.schemas import OrchestratorWorkflowState
+
+path_map = {
+    "object_permanence": "object_permanence_workflow",
+    "face_recognition": "face_recognition_workflow"
+}
+
+
+def create_compiled_state_graph() -> CompiledStateGraph:
+    workflow = StateGraph(OrchestratorWorkflowState)
+
+    workflow.add_node("orchestrator", orchestrator)
+    workflow.add_node("object_permanence_workflow", object_permanence_workflow)
+    workflow.add_node("face_recognition_workflow", face_recognition_workflow)
+
+    workflow.set_entry_point("orchestrator")
+
+    workflow.add_conditional_edges(
+        "orchestrator",
+        router,
+        path_map
+    )
+    workflow.set_finish_point("object_permanence_workflow")
+    workflow.set_finish_point("face_recognition_workflow")
+
+    compiled_graph = workflow.compile()
+    return compiled_graph
