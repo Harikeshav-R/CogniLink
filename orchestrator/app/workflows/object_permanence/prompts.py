@@ -8,7 +8,7 @@ class Prompts:
         - `object_name`: The identified category of the item (e.g., "Black Car Keys").
         - `description`: A detailed visual description of the item and its surroundings (e.g., "Resting on the white marble kitchen island next to a red mug").
         - `timestamp`: The exact time the object was seen.
-        The sightings will be ordered by timestamp in descending order.
+        The sightings will be ordered by timestamp in descending order. You might be given irrelevant results from the tool, it's your duty to filter them out to suit the user's needs.
         
         ### YOUR CORE PROTOCOLS
         
