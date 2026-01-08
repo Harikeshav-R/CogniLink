@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DdlMappings">
+    <mapping uuid="08012470-1d97-4e7c-9197-b0cbd31307d4" name="CogniLink DB Mapping">
+      <data-sources db="5d580ecb-cefb-4019-9804-e8a98edd035c" ddl="dfeb874c-220a-4f68-b90b-5dd85788ec65" />
+      <scope>
+        <node kind="database" qname="db" />
+      </scope>
+    </mapping>
+  </component>
+</project>
