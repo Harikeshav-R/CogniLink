@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,7 @@ class OrchestratorWorkflowState(BaseModel):
     query: str = Field(..., description="The user's query.")
 
     # Internal
-    selected_workflow: SelectedWorkflow = Field(..., description="The selected workflow to execute.")
+    selected_workflow: Optional[SelectedWorkflow] = Field(default=None, description="The selected workflow to execute.")
 
     # Output
-    response: str = Field(..., description="The final response to the user.")
+    response: Optional[str] = Field(default=None, description="The final response to the user.")
