@@ -60,7 +60,7 @@ async def deduplicate_objects(state: ObjectPermanenceWorkflowState) -> dict:
 
     logger.debug("Initializing model for deduplication...")
     model = init_pollinations_chat_model(
-        Config.POLLINATIONS_SMART_MODEL,
+        Config.POLLINATIONS_FAST_MODEL,
         Config.POLLINATIONS_API_KEY
     )
     logger.trace("Model initialized.")

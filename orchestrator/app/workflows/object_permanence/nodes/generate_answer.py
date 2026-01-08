@@ -28,7 +28,7 @@ async def generate_answer(state: ObjectPermanenceWorkflowState) -> dict:
     :rtype: dict
     """
     model = init_pollinations_chat_model(
-        Config.POLLINATIONS_SMART_MODEL,
+        Config.POLLINATIONS_FAST_MODEL,
         Config.POLLINATIONS_API_KEY
     )
 
@@ -45,6 +45,7 @@ async def generate_answer(state: ObjectPermanenceWorkflowState) -> dict:
                 {
                     "role": "user",
                     "content": [
+                        {"type": "text", "text": f"The query is: {state.query}"},
                         {"type": "text", "text": "Tool output:"},
                         {"type": "text", "text": "\n".join(
                             [json.dumps(entry.model_dump(), indent=2) for entry in state.matching_entries])}
