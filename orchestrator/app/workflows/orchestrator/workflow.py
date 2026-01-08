@@ -14,6 +14,18 @@ path_map = {
 
 
 def create_compiled_state_graph() -> CompiledStateGraph:
+    """
+    Creates and compiles a state graph for a workflow system.
+
+    This function initializes a `StateGraph` using the provided
+    `OrchestratorWorkflowState` as the base. It adds multiple nodes to the
+    graph, defines the entry point, sets up conditional edges using a
+    router and path mapping, and sets the finish points for specific states.
+    Finally, the state graph is compiled and returned as a `CompiledStateGraph`.
+
+    :return: A fully compiled `CompiledStateGraph` object ready for execution
+    :rtype: CompiledStateGraph
+    """
     workflow = StateGraph(OrchestratorWorkflowState)
 
     workflow.add_node("orchestrator", orchestrator)

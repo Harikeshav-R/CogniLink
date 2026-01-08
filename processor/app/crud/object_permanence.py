@@ -11,6 +11,27 @@ async def create_object_permanence_entry(
         description: str,
         embedding: list[float]
 ) -> ObjectPermanence:
+    """
+    Create a new object permanence log entry in the database.
+
+    This function instantiates an ObjectPermanence model, persists it to the database,
+    and handles transaction commits and rollbacks.
+
+    :param db: The asynchronous database session.
+    :type db: AsyncSession
+    :param timestamp: The Unix timestamp when the object was observed.
+    :type timestamp: float
+    :param object_name: The name or identifier of the object.
+    :type object_name: str
+    :param description: A textual description of the object or its state.
+    :type description: str
+    :param embedding: A vector representation (embedding) of the object.
+    :type embedding: list[float]
+    :return: The created object permanence database record, including generated fields like ID.
+    :rtype: ObjectPermanence
+    :raises Exception: If the database transaction fails, the session is rolled back and the exception is re-raised.
+    """
+
     logger.info("Creating new object permanence log entry for object: '{}'", object_name)
     logger.debug("Log details - Timestamp: {}, Description length: {}, Embedding size: {}",
                  timestamp, len(description), len(embedding))

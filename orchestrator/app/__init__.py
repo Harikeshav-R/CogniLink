@@ -56,6 +56,19 @@ async def get_db_version(session: AsyncSession = Depends(get_session)):
 
 @app.post("/api/query")
 async def generate_response(query: str):
+    """
+    Generates a response based on the provided query using an orchestrator workflow.
+
+    This function initializes a compiled state graph for the orchestrator workflow,
+    sets up the initial state using the input query, and processes the workflow
+    to obtain the final state. The final state is validated and the response
+    is extracted for returning.
+
+    :param query: The input query for which a response is to be generated.
+    :type query: str
+    :return: A dictionary containing the generated response based on the query.
+    :rtype: dict
+    """
     workflow = create_compiled_state_graph()
     initial_state = OrchestratorWorkflowState(query=query)
     final_state: OrchestratorWorkflowState = await workflow.ainvoke(initial_state)

@@ -8,6 +8,18 @@ from app.workflows.orchestrator.schemas import OrchestratorWorkflowState, Select
 
 
 async def orchestrator(state: OrchestratorWorkflowState) -> dict:
+    """
+    Handles the orchestration of a workflow by invoking an AI model with input
+    query and returning a structured response encapsulating the selected workflow.
+
+    :param state: The current state of the orchestrator containing necessary
+        information such as the query to be processed.
+    :type state: OrchestratorWorkflowState
+
+    :return: A dictionary containing the selected workflow from the AI model's
+        structured response.
+    :rtype: dict
+    """
     model = init_pollinations_chat_model(
         Config.POLLINATIONS_FAST_MODEL,
         Config.POLLINATIONS_API_KEY

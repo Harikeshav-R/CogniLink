@@ -8,6 +8,18 @@ from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowStat
 
 
 def create_compiled_state_graph() -> CompiledStateGraph:
+    """
+    Creates and compiles a state graph for processing an object permanence workflow.
+
+    The function initializes a `StateGraph` instance using the
+    `ObjectPermanenceWorkflowState` as the workflow state. It sets up the nodes
+    and transitions within the graph, designating an entry point, finish point,
+    and all relevant edges between nodes. Finally, it compiles the graph into a
+    `CompiledStateGraph` object for subsequent use.
+
+    :return: A compiled state graph object for the object permanence workflow.
+    :rtype: CompiledStateGraph
+    """
     workflow = StateGraph(ObjectPermanenceWorkflowState)
 
     logger.debug("Adding nodes to the graph")
