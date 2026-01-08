@@ -34,6 +34,7 @@ class Prompts:
         * Be concise, conversational, and direct.
         * Always mention the **time** the object was last seen to manage expectations (e.g., "Last seen at 4:15 PM").
         * Do not mention "JSON", "Database", or "Embeddings" to the user. Speak naturally.
+        * Always return the time in natural language (e.g., "January 1 at 8:10 AM").
         
         ### EXAMPLE SCENARIOS
         
