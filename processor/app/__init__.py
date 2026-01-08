@@ -54,7 +54,7 @@ async def lifespan(app: FastAPI):
     logger.success("Application shutdown complete.")
 
 
-app = FastAPI(lifespan=lifespan, title="CogniLink Backend", version="1.0.0")
+app = FastAPI(lifespan=lifespan, title="CogniLink Processor Server", version="1.0.0")
 
 logger.trace("Checking DEBUG mode for CORS middleware configuration.")
 if Config.DEBUG:

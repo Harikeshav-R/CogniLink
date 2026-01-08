@@ -1,4 +1,7 @@
+from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from sqlalchemy import func
 from sqlmodel import select
@@ -9,7 +12,40 @@ from app.core.db import get_session, init_db
 from app.workflows.orchestrator.schemas import OrchestratorWorkflowState
 from app.workflows.orchestrator.workflow import create_compiled_state_graph
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # On Startup
+    logger.info("Application lifespan starting...")
+    logger.trace("Initializing database...")
+    await init_db()
+    logger.info("Database initialization complete.")
+
+    logger.trace("Yielding control to the application...")
+    yield
+    logger.trace("Control returned from application. Starting shutdown sequence.")
+
+    # On Shutdown
+    logger.info("Application lifespan shutting down...")
+    logger.success("Application shutdown complete.")
+
+
+app = FastAPI(lifespan=lifespan, title="CogniLink Orchestrator Server", version="1.0.0")
+
+logger.trace("Checking DEBUG mode for CORS middleware configuration.")
+if Config.DEBUG:
+    logger.info("DEBUG mode is enabled. Adding CORS middleware for development.")
+    logger.trace(f"Allowed origins: {['http://localhost:5173', 'http://localhost:8000']}")
+    # CORS Middleware for development
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173", "http://localhost:8000"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    logger.info("DEBUG mode is disabled. Skipping CORS middleware.")
 
 
 @app.get("/")
