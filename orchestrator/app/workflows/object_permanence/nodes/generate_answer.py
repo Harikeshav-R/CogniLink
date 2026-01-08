@@ -1,5 +1,5 @@
 import json
-
+from loguru import logger
 from langchain.agents import create_agent
 from langchain_core.messages import SystemMessage
 
@@ -27,11 +27,17 @@ async def generate_answer(state: ObjectPermanenceWorkflowState) -> dict:
         provided by the structured response.
     :rtype: dict
     """
+    logger.info("Generating answer for the object permanence workflow.")
+    logger.debug(f"Current state: {state}")
+
+    logger.trace("Initializing Pollinations chat model.")
     model = init_pollinations_chat_model(
         Config.POLLINATIONS_FAST_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+    logger.trace("Model initialized.")
 
+    logger.trace("Creating agent with response format and system prompt.")
     agent = create_agent(
         model=model,
         response_format=GenerateAnswerOutput,
@@ -39,6 +45,9 @@ async def generate_answer(state: ObjectPermanenceWorkflowState) -> dict:
             content=Prompts.GENERATE_ANSWER
         ),
     )
+    logger.trace("Agent created.")
+
+    logger.debug("Invoking agent with user query and matching entries.")
     response = await agent.ainvoke(
         {
             "messages": [
@@ -54,6 +63,12 @@ async def generate_answer(state: ObjectPermanenceWorkflowState) -> dict:
             ]
         }
     )
+    logger.debug("Agent invocation complete.")
+    logger.trace(f"Response from agent: {response}")
 
     structured_response: GenerateAnswerOutput = response["structured_response"]
-    return {"response": structured_response.answer}
+    logger.success(f"Answer generated successfully: {structured_response.answer}")
+    final_response = {"response": structured_response.answer}
+    logger.trace(f"Returning final response: {final_response}")
+    return final_response
+

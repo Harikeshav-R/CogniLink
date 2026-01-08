@@ -1,3 +1,5 @@
+from loguru import logger
+
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState
 from app.workflows.object_permanence.workflow import create_compiled_state_graph
 from app.workflows.orchestrator.schemas import OrchestratorWorkflowState
@@ -21,11 +23,28 @@ async def object_permanence_workflow(state: OrchestratorWorkflowState) -> dict:
         object permanence workflow state.
     :rtype: dict
     """
-    workflow = create_compiled_state_graph()
-    initial_state = ObjectPermanenceWorkflowState(query=state.query)
-    final_state: ObjectPermanenceWorkflowState = await workflow.ainvoke(initial_state)
-    final_state = ObjectPermanenceWorkflowState.model_validate(final_state)
+    logger.info("Executing object permanence workflow.")
+    logger.debug(f"Current orchestrator state: {state}")
 
-    return {
-        "response": final_state.response
-    }
+    logger.trace("Creating compiled state graph for object permanence.")
+    workflow = create_compiled_state_graph()
+    logger.trace("State graph created.")
+
+    logger.debug(f"Initializing object permanence workflow with query: '{state.query}'")
+    initial_state = ObjectPermanenceWorkflowState(query=state.query)
+    logger.trace(f"Initial state for sub-workflow: {initial_state}")
+
+    logger.debug("Invoking the object permanence workflow.")
+    final_state: ObjectPermanenceWorkflowState = await workflow.ainvoke(initial_state)
+    logger.debug("Object permanence workflow invocation complete.")
+    logger.trace(f"Final state from sub-workflow: {final_state}")
+
+    logger.trace("Validating final state model.")
+    final_state = ObjectPermanenceWorkflowState.model_validate(final_state)
+    logger.trace("Final state validated.")
+
+    response = {"response": final_state.response}
+    logger.success("Object permanence workflow executed successfully.")
+    logger.trace(f"Returning response: {response}")
+    return response
+
