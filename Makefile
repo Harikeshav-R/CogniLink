@@ -9,7 +9,7 @@ PROD_COMPOSE_FILE := -f docker-compose.prod.yml
 .DEFAULT_GOAL := help
 
 # Phony targets prevent conflicts with files of the same name
-.PHONY: prune dev dev-up dev-build dev-down dev-stop dev-restart dev-logs dev-logs-backend dev-logs-frontend dev-shell-backend dev-shell-frontend dev-shell-db prod prod-up prod-build prod-down prod-stop prod-restart prod-logs prod-logs-backend prod-logs-frontend prod-shell-backend prod-shell-frontend prod-shell-db
+.PHONY: prune dev dev-up dev-build dev-down dev-stop dev-restart dev-logs dev-logs-processor dev-logs-orchestrator dev-shell-processor dev-shell-orchestrator dev-shell-db prod prod-up prod-build prod-down prod-stop prod-restart prod-logs prod-logs-processor prod-logs-orchestrator prod-shell-processor prod-shell-orchestrator prod-shell-db
 
 # --- General Utility Commands ---
 
@@ -51,21 +51,21 @@ dev-logs: ## View and follow logs for all running development services.
 	@echo "Following logs for all development services..."
 	@docker-compose $(DEV_COMPOSE_FILE) logs -f
 
-dev-logs-backend: ## View and follow logs for the development backend service only.
-	@echo "Following backend logs..."
-	@docker-compose $(DEV_COMPOSE_FILE) logs -f backend
+dev-logs-processor: ## View and follow logs for the development processor service only.
+	@echo "Following processor logs..."
+	@docker-compose $(DEV_COMPOSE_FILE) logs -f processor
 
-dev-logs-frontend: ## View and follow logs for the development frontend service only.
-	@echo "Following frontend logs..."
-	@docker-compose $(DEV_COMPOSE_FILE) logs -f frontend
+dev-logs-orchestrator: ## View and follow logs for the development orchestrator service only.
+	@echo "Following orchestrator logs..."
+	@docker-compose $(DEV_COMPOSE_FILE) logs -f orchestrator
 
-dev-shell-backend: ## Open a bash shell inside the running development backend container.
-	@echo "Opening bash shell in backend container..."
-	@docker-compose $(DEV_COMPOSE_FILE) exec backend /bin/bash
+dev-shell-processor: ## Open a bash shell inside the running development processor container.
+	@echo "Opening bash shell in processor container..."
+	@docker-compose $(DEV_COMPOSE_FILE) exec processor /bin/bash
 
-dev-shell-frontend: ## Open a bash shell inside the running development frontend container.
-	@echo "Opening bash shell in frontend container..."
-	@docker-compose $(DEV_COMPOSE_FILE) exec frontend /bin/bash
+dev-shell-orchestrator: ## Open a bash shell inside the running development orchestrator container.
+	@echo "Opening bash shell in orchestrator container..."
+	@docker-compose $(DEV_COMPOSE_FILE) exec orchestrator /bin/bash
 
 dev-shell-db: ## Open a psql shell to interact with the development PostgreSQL database.
 	@echo "Opening psql shell in db container..."
@@ -100,21 +100,21 @@ prod-logs: ## View and follow logs for all running production services.
 	@echo "Following logs for all production services..."
 	@docker-compose $(PROD_COMPOSE_FILE) logs -f
 
-prod-logs-backend: ## View and follow logs for the production backend service only.
-	@echo "Following production backend logs..."
-	@docker-compose $(PROD_COMPOSE_FILE) logs -f backend
+prod-logs-processor: ## View and follow logs for the production processor service only.
+	@echo "Following production processor logs..."
+	@docker-compose $(PROD_COMPOSE_FILE) logs -f processor
 
-prod-logs-frontend: ## View and follow logs for the production frontend service only.
-	@echo "Following production frontend logs..."
-	@docker-compose $(PROD_COMPOSE_FILE) logs -f frontend
+prod-logs-orchestrator: ## View and follow logs for the production orchestrator service only.
+	@echo "Following production orchestrator logs..."
+	@docker-compose $(PROD_COMPOSE_FILE) logs -f orchestrator
 
-prod-shell-backend: ## Open a bash shell inside the running production backend container.
-	@echo "Opening bash shell in production backend container..."
-	@docker-compose $(PROD_COMPOSE_FILE) exec backend /bin/bash
+prod-shell-processor: ## Open a bash shell inside the running production processor container.
+	@echo "Opening bash shell in production processor container..."
+	@docker-compose $(PROD_COMPOSE_FILE) exec processor /bin/bash
 
-prod-shell-frontend: ## Open a bash shell inside the running production frontend container.
-	@echo "Opening bash shell in production frontend container..."
-	@docker-compose $(PROD_COMPOSE_FILE) exec frontend /bin/bash
+prod-shell-orchestrator: ## Open a bash shell inside the running production orchestrator container.
+	@echo "Opening bash shell in production orchestrator container..."
+	@docker-compose $(PROD_COMPOSE_FILE) exec orchestrator /bin/bash
 
 prod-shell-db: ## Open a psql shell to interact with the production PostgreSQL database.
 	@echo "Opening psql shell in production db container..."

@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AIAssistantCustomInstructionsStorage">
+    <option name="instructions">
+      <map>
+        <entry key="AIAssistant.VCS.GenerateCommitMessage">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.VCS.GenerateCommitMessage" />
+              <option name="content" value="Use the Conventional Commit format. Use bullet points for multiple changes." />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="Update `.idea/workspace.xml` with project tasks and configuration adjustments">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
+    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="Add dependencies and update workspace settings  &#10;&#10;- Added new dependencies to `uv.lock`, including `deepface`, `flask-cors`, and others.  &#10;- Updated `.idea/workspace.xml` to include recent project tasks and branch changes.">
+      <change beforePath="$PROJECT_DIR$/../Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../Makefile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +110,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "ml.llm.AIAssistantPromptsLibrary",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   },
@@ -171,7 +183,7 @@
       <workItem from="1767837674363" duration="1881000" />
       <workItem from="1767900013749" duration="726000" />
       <workItem from="1767900889305" duration="539000" />
-      <workItem from="1767901440886" duration="8156000" />
+      <workItem from="1767901440886" duration="8425000" />
     </task>
     <task id="LOCAL-00001" summary="refactor(workflows): migrate `retrieve_matching_objects` to reusable node structure&#10;&#10;- Move `retrieve_matching_objects` from `tools` to `nodes` for better modularity.&#10;- Update function signature to use `ObjectPermanenceWorkflowState` schema.&#10;- Refactor return type to structured dictionary with query results encapsulated in `DbQueryOutput`.">
       <option name="closed" value="true" />
@@ -445,7 +457,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767909730556</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Add dependencies and update workspace settings  &#10;&#10;- Added new dependencies to `uv.lock`, including `deepface`, `flask-cors`, and others.  &#10;- Updated `.idea/workspace.xml` to include recent project tasks and branch changes.">
+      <option name="closed" value="true" />
+      <created>1767918291975</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1767918291975</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -463,7 +483,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(workflows): add `OrchestratorWorkflowState` and `SelectedWorkflow` schemas&#10;&#10;- Introduce schemas to manage user query, selected workflow, and response structure.&#10;- Support workflows like `object_permanence` and `face_recognition`." />
     <MESSAGE value="feat(workflows): define `Prompts` class for routing user queries to workflows&#10;&#10;- Add `Prompts` class with decision logic and examples to match user inputs to `object_permanence` or `face_recognition` workflows.&#10;- Provide guidelines for prioritization, ambiguity resolution, and edge case handling." />
     <MESSAGE value="feat(workflows): create package structure for `orchestrator` workflows&#10;&#10;- Add `__init__.py` files for `orchestrator` and `orchestrator/nodes` modules." />
     <MESSAGE value="feat(workflows): add `object_permanence_workflow` entry point for `orchestrator` workflows&#10;&#10;- Introduce `object_permanence_workflow` function to handle state transitions with `ObjectPermanenceWorkflowState`. &#10;- Integrate `create_compiled_state_graph` for workflow execution and response generation." />
@@ -488,7 +507,8 @@
     <MESSAGE value="Add IntelliJ IDEA project configuration files&#10;&#10;- Include `.idea` folder with settings for database navigator, inspection profiles, VCS mappings, and workspace configurations." />
     <MESSAGE value="Add GitToolBox project settings to IntelliJ configuration files" />
     <MESSAGE value="Update `.idea/workspace.xml` with project tasks and configuration adjustments" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update `.idea/workspace.xml` with project tasks and configuration adjustments" />
+    <MESSAGE value="Add dependencies and update workspace settings  &#10;&#10;- Added new dependencies to `uv.lock`, including `deepface`, `flask-cors`, and others.  &#10;- Updated `.idea/workspace.xml` to include recent project tasks and branch changes." />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
