@@ -14,6 +14,7 @@ dependencies = [
     "asyncpg>=0.29.0",
     "pgvector>=0.4.2",
     "sqlmodel>=0.0.29",
+    "deepface>=0.0.96",
 ]
 
 [dependency-groups]

@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="">
+    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="Update `.idea/workspace.xml` with project tasks and configuration adjustments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +28,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$/.." value="orchestrator-object-permanence" />
+        <entry key="$PROJECT_DIR$/.." value="main" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -39,6 +41,10 @@
             <RecentBranchesForRepo>
               <option name="branches">
                 <list>
+                  <RecentBranch>
+                    <option name="branchName" value="processor-face-recognition" />
+                    <option name="lastUsedInstant" value="1767909726" />
+                  </RecentBranch>
                   <RecentBranch>
                     <option name="branchName" value="main" />
                     <option name="lastUsedInstant" value="1767900857" />
@@ -72,36 +78,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;FastAPI.Dev Orchestrator.executor&quot;: &quot;Run&quot;,
-    &quot;FastAPI.Dev Processor.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/hari/Developer/CogniLink/processor&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "FastAPI.Dev Orchestrator.executor": "Run",
+    "FastAPI.Dev Processor.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "processor-face-recognition",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/Users/hari/Developer/CogniLink/processor",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="FastAPI.Dev Orchestrator">
     <configuration name="Dev Orchestrator" type="Python.FastAPI">
       <option name="additionalOptions" value="--host 0.0.0.0 --port 8001 --reload" />
@@ -165,7 +171,7 @@
       <workItem from="1767837674363" duration="1881000" />
       <workItem from="1767900013749" duration="726000" />
       <workItem from="1767900889305" duration="539000" />
-      <workItem from="1767901440886" duration="4822000" />
+      <workItem from="1767901440886" duration="8156000" />
     </task>
     <task id="LOCAL-00001" summary="refactor(workflows): migrate `retrieve_matching_objects` to reusable node structure&#10;&#10;- Move `retrieve_matching_objects` from `tools` to `nodes` for better modularity.&#10;- Update function signature to use `ObjectPermanenceWorkflowState` schema.&#10;- Refactor return type to structured dictionary with query results encapsulated in `DbQueryOutput`.">
       <option name="closed" value="true" />
@@ -431,7 +437,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767900944399</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Update `.idea/workspace.xml` with project tasks and configuration adjustments">
+      <option name="closed" value="true" />
+      <created>1767909730556</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1767909730556</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -449,7 +463,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(workflows): implement `create_compiled_state_graph` for `object_permanence` workflow&#10;&#10;- Build state graph with nodes `retrieve_matching_objects` and `generate_answer`.&#10;- Define entry point, edges, and finish point.&#10;- Compile and return the finalized state graph." />
     <MESSAGE value="feat(workflows): add `OrchestratorWorkflowState` and `SelectedWorkflow` schemas&#10;&#10;- Introduce schemas to manage user query, selected workflow, and response structure.&#10;- Support workflows like `object_permanence` and `face_recognition`." />
     <MESSAGE value="feat(workflows): define `Prompts` class for routing user queries to workflows&#10;&#10;- Add `Prompts` class with decision logic and examples to match user inputs to `object_permanence` or `face_recognition` workflows.&#10;- Provide guidelines for prioritization, ambiguity resolution, and edge case handling." />
     <MESSAGE value="feat(workflows): create package structure for `orchestrator` workflows&#10;&#10;- Add `__init__.py` files for `orchestrator` and `orchestrator/nodes` modules." />
@@ -474,7 +487,8 @@
     <MESSAGE value="refactor(app): update app titles and integrate lifespan logic with CORS middleware" />
     <MESSAGE value="Add IntelliJ IDEA project configuration files&#10;&#10;- Include `.idea` folder with settings for database navigator, inspection profiles, VCS mappings, and workspace configurations." />
     <MESSAGE value="Add GitToolBox project settings to IntelliJ configuration files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add GitToolBox project settings to IntelliJ configuration files" />
+    <MESSAGE value="Update `.idea/workspace.xml` with project tasks and configuration adjustments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update `.idea/workspace.xml` with project tasks and configuration adjustments" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
