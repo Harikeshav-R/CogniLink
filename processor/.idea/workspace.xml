@@ -18,8 +18,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="Add dependencies and update workspace settings  &#10;&#10;- Added new dependencies to `uv.lock`, including `deepface`, `flask-cors`, and others.  &#10;- Updated `.idea/workspace.xml` to include recent project tasks and branch changes.">
-      <change beforePath="$PROJECT_DIR$/../Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../Makefile" afterDir="false" />
+    <list default="true" id="5acd63d4-fd9c-4d90-ad3f-7f11daa849a1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,36 +90,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "FastAPI.Dev Orchestrator.executor": "Run",
-    "FastAPI.Dev Processor.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "ai.playground.ignore.import.keys.banner.in.settings": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "processor-face-recognition",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/Users/hari/Developer/CogniLink/processor",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "ml.llm.AIAssistantPromptsLibrary",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;FastAPI.Dev Orchestrator.executor&quot;: &quot;Run&quot;,
+    &quot;FastAPI.Dev Processor.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;processor-face-recognition&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/hari/Developer/CogniLink/processor&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;ml.llm.AIAssistantPromptsLibrary&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="FastAPI.Dev Orchestrator">
     <configuration name="Dev Orchestrator" type="Python.FastAPI">
       <option name="additionalOptions" value="--host 0.0.0.0 --port 8001 --reload" />
@@ -183,7 +183,9 @@
       <workItem from="1767837674363" duration="1881000" />
       <workItem from="1767900013749" duration="726000" />
       <workItem from="1767900889305" duration="539000" />
-      <workItem from="1767901440886" duration="8425000" />
+      <workItem from="1767901440886" duration="11509000" />
+      <workItem from="1767932148986" duration="241000" />
+      <workItem from="1767987071268" duration="1553000" />
     </task>
     <task id="LOCAL-00001" summary="refactor(workflows): migrate `retrieve_matching_objects` to reusable node structure&#10;&#10;- Move `retrieve_matching_objects` from `tools` to `nodes` for better modularity.&#10;- Update function signature to use `ObjectPermanenceWorkflowState` schema.&#10;- Refactor return type to structured dictionary with query results encapsulated in `DbQueryOutput`.">
       <option name="closed" value="true" />
@@ -465,7 +467,15 @@
       <option name="project" value="LOCAL" />
       <updated>1767918291975</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="chore: update `.idea/workspace.xml` with new instructions and task configurations&#10;&#10;- Added custom instructions for AI Assistant action IDs and prompts.&#10;- Updated project task configurations in `.idea/workspace.xml`.&#10;- Adjusted editor settings and updated configurable sections.&#10;- Modified task durations and counters for recent project updates.">
+      <option name="closed" value="true" />
+      <created>1767918549647</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1767918549647</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -483,7 +493,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(workflows): define `Prompts` class for routing user queries to workflows&#10;&#10;- Add `Prompts` class with decision logic and examples to match user inputs to `object_permanence` or `face_recognition` workflows.&#10;- Provide guidelines for prioritization, ambiguity resolution, and edge case handling." />
     <MESSAGE value="feat(workflows): create package structure for `orchestrator` workflows&#10;&#10;- Add `__init__.py` files for `orchestrator` and `orchestrator/nodes` modules." />
     <MESSAGE value="feat(workflows): add `object_permanence_workflow` entry point for `orchestrator` workflows&#10;&#10;- Introduce `object_permanence_workflow` function to handle state transitions with `ObjectPermanenceWorkflowState`. &#10;- Integrate `create_compiled_state_graph` for workflow execution and response generation." />
     <MESSAGE value="feat(workflows): add `orchestrator` node to handle workflow selection via LLM agent&#10;&#10;- Implement `orchestrator` function to process user queries and select appropriate workflows using `langchain` agents.&#10;- Integrate `Prompts.GENERATE_ANSWER` and `SelectedWorkflow` schema for structured response generation." />
@@ -508,7 +517,8 @@
     <MESSAGE value="Add GitToolBox project settings to IntelliJ configuration files" />
     <MESSAGE value="Update `.idea/workspace.xml` with project tasks and configuration adjustments" />
     <MESSAGE value="Add dependencies and update workspace settings  &#10;&#10;- Added new dependencies to `uv.lock`, including `deepface`, `flask-cors`, and others.  &#10;- Updated `.idea/workspace.xml` to include recent project tasks and branch changes." />
-    <option name="LAST_COMMIT_MESSAGE" value="" />
+    <MESSAGE value="chore: update `.idea/workspace.xml` with new instructions and task configurations&#10;&#10;- Added custom instructions for AI Assistant action IDs and prompts.&#10;- Updated project task configurations in `.idea/workspace.xml`.&#10;- Adjusted editor settings and updated configurable sections.&#10;- Modified task durations and counters for recent project updates." />
+    <option name="LAST_COMMIT_MESSAGE" value="chore: update `.idea/workspace.xml` with new instructions and task configurations&#10;&#10;- Added custom instructions for AI Assistant action IDs and prompts.&#10;- Updated project task configurations in `.idea/workspace.xml`.&#10;- Adjusted editor settings and updated configurable sections.&#10;- Modified task durations and counters for recent project updates." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
