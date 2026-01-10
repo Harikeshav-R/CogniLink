@@ -4,14 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="18c77c08-49d5-4319-84e5-ac7b4a92a60e" name="Changes" comment="" />
+    <list default="true" id="18c77c08-49d5-4319-84e5-ac7b4a92a60e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../processor/app/shared/frame_broadcaster.py" beforeDir="false" afterPath="$PROJECT_DIR$/../processor/app/shared/frame_broadcaster.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="45" />
+    <option name="cachedIndexableFilesCount" value="93" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -50,9 +54,9 @@
     <commands />
     <urls />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 7
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
   <component name="ProjectId" id="382E09bDLkWmyEWISOuI411dweI" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -75,7 +79,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
@@ -96,8 +100,18 @@
       <option name="presentableId" value="Default" />
       <updated>1764210413535</updated>
       <workItem from="1764210415092" duration="38000" />
-      <workItem from="1767989040506" duration="4181000" />
+      <workItem from="1767989040506" duration="4278000" />
+      <workItem from="1768005112857" duration="31000" />
     </task>
+    <task id="LOCAL-00001" summary="Update IntelliJ IDEA configuration to include workspace settings, VCS mappings, and database navigator integration">
+      <option name="closed" value="true" />
+      <created>1768005096047</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1768005096047</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -113,5 +127,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Update IntelliJ IDEA configuration to include workspace settings, VCS mappings, and database navigator integration" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
 </project>
