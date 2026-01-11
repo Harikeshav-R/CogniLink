@@ -91,6 +91,3 @@ class FrameBroadcaster:
                 break  # Timeout reached during wait
 
         return batch
-
-
-frame_broadcaster = FrameBroadcaster()
