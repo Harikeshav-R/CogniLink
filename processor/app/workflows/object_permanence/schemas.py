@@ -1,6 +1,5 @@
-from typing import Optional
-
 from pydantic import BaseModel, Field, ConfigDict
+from typing import Optional
 
 
 class DetectedObject(BaseModel):
@@ -43,7 +42,7 @@ class ObjectPermanenceWorkflowState(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # Inputs
-    current_frame_b64: str = Field(..., description="Encoded image data in Base64 format.")
+    current_frame_batch_base64: list[str] = Field(..., description="Encoded frame data in Base64 format.")
     previous_frame_objects: Optional[list[DetectedObject]] = Field(description="List of objects from previous frame.",
                                                                    default_factory=list)
     previous_room: Optional[str] = Field(description="Name of the previous room.", default=None)

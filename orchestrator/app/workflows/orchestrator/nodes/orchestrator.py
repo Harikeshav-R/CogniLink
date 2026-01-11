@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage
 from loguru import logger
 
 from app.core.config import Config
-from app.shared.model_factory import init_pollinations_chat_model
+from app.shared.model_factory import init_pollinations_chat_model, init_google_genai_chat_model
 from app.workflows.orchestrator.prompts import Prompts
 from app.workflows.orchestrator.schemas import OrchestratorWorkflowState, SelectedWorkflow
 
@@ -29,6 +29,10 @@ async def orchestrator(state: OrchestratorWorkflowState) -> dict:
         Config.POLLINATIONS_FAST_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+    # model = init_google_genai_chat_model(
+    #     Config.GEMINI_FAST_MODEL,
+    #     Config.GEMINI_API_KEY
+    # )
     logger.trace("Model initialized.")
 
     logger.trace("Creating agent with response format and system prompt.")
