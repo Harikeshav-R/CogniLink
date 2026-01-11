@@ -1,11 +1,11 @@
 from loguru import logger
 
-from app.shared.frame_broadcaster import frame_broadcaster
+from app.shared.frame_broadcaster import FrameBroadcaster
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState, DetectedObject
 from app.workflows.object_permanence.workflow import create_compiled_state_graph
 
 
-async def object_permanence_workflow_runner() -> None:
+async def object_permanence_workflow_runner(frame_broadcaster: FrameBroadcaster) -> None:
     frames_subscription = frame_broadcaster.subscribe()
     previous_analyzed_objects: list[DetectedObject] = []
     previous_room: str | None = None
