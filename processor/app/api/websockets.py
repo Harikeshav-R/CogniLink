@@ -1,3 +1,4 @@
+import base64
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from loguru import logger
 
@@ -37,16 +38,19 @@ async def object_permanence_ws(websocket: WebSocket):
     try:
         while True:
             logger.trace("Waiting to receive text data from WebSocket...")
-            frame_b64 = await websocket.receive_text()
-            logger.debug(f"Received data chunk of size {len(frame_b64)} bytes via WebSocket.")
+            frame = await websocket.receive_bytes()
+            logger.debug(f"Received data chunk of size {len(frame)} bytes via WebSocket.")
+            frame_b64 = base64.b64encode(frame).decode("utf-8")
             logger.trace("Publishing received frame to broadcaster...")
-            await broadcaster.publish_frame(frame_b64)
+            await broadcaster.broadcast(frame_b64)
             logger.trace("Frame successfully published to broadcaster.")
 
     except WebSocketDisconnect as e:
-        logger.warning(f"WebSocket disconnected from {client_host}:{client_port} with code {e.code}. Reason: {e.reason}")
+        logger.warning(
+            f"WebSocket disconnected from {client_host}:{client_port} with code {e.code}. Reason: {e.reason}")
     except Exception as e:
-        logger.error(f"An unexpected error occurred in the WebSocket handler for {client_host}:{client_port}: {e}", exc_info=True)
+        logger.error(f"An unexpected error occurred in the WebSocket handler for {client_host}:{client_port}: {e}",
+                     exc_info=True)
         # It's good practice to close the connection gracefully if an unexpected error occurs.
         await websocket.close(code=1011, reason=f"An unexpected server-side error occurred.")
     finally:
