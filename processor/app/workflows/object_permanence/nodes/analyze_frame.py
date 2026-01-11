@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage
 from loguru import logger
 
 from app.core.config import Config
-from app.shared.model_factory import init_pollinations_chat_model
+from app.shared.model_factory import init_pollinations_chat_model, init_google_genai_chat_model
 from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.schemas import FrameAnalysis, ObjectPermanenceWorkflowState
 
@@ -31,6 +31,11 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
         Config.POLLINATIONS_VISION_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+
+    # model = init_google_genai_chat_model(
+    #     Config.GEMINI_VISION_MODEL,
+    #     Config.GEMINI_API_KEY
+    # )
     logger.trace("Vision model initialized.")
 
     logger.debug("Creating analysis agent with structured output (FrameAnalysis).")
