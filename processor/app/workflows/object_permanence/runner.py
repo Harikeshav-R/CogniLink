@@ -43,6 +43,9 @@ async def object_permanence_workflow_runner(frame_broadcaster: FrameBroadcaster)
 
             logger.success(f"Successfully processed and concluded workflow for frame batch.")
 
-        except Exception as e:
-            logger.error(f"An unhandled error occurred while processing frame batch: {e}", exc_info=True,
-                         backtrace=True)
+        except BaseException as e:
+            logger.error(
+                f"An unhandled error or cancellation occurred while processing frame batch. Type: {type(e)}, Value: {e}",
+                exc_info=True,
+                backtrace=True)
+            raise e
