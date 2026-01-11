@@ -1,6 +1,5 @@
 import asyncio
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
@@ -39,10 +38,6 @@ async def lifespan(app: FastAPI):
 
     # On Shutdown
     logger.info("Application lifespan shutting down...")
-    logger.trace("Stopping frame broadcaster...")
-    frame_broadcaster.stop()
-    logger.info("Frame broadcaster stopped.")
-
     logger.trace("Cancelling object permanence workflow runner task...")
     runner_task.cancel()
     try:

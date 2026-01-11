@@ -3,7 +3,7 @@ from langchain_core.messages import SystemMessage
 from loguru import logger
 
 from app.core.config import Config
-from app.shared.model_factory import init_pollinations_chat_model
+from app.shared.model_factory import init_pollinations_chat_model, init_google_genai_chat_model
 from app.workflows.object_permanence.prompts import Prompts
 from app.workflows.object_permanence.schemas import ObjectPermanenceWorkflowState, DeduplicationResult, DetectedObject
 
@@ -63,6 +63,10 @@ async def deduplicate_objects(state: ObjectPermanenceWorkflowState) -> dict:
         Config.POLLINATIONS_FAST_MODEL,
         Config.POLLINATIONS_API_KEY
     )
+    # model = init_google_genai_chat_model(
+    #     Config.GEMINI_FAST_MODEL,
+    #     Config.GEMINI_API_KEY
+    # )
     logger.trace("Model initialized.")
 
     logger.debug("Creating deduplication agent with structured output (DeduplicationResult).")
