@@ -51,9 +51,18 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": "Here is your frame to analyze:"},
-                        {"type": "image_url",
-                         "image_url": {"url": f"data:image/png;base64,{state.current_frame_b64}"}},
+                        {
+                            "type": "text",
+                            "text": "Here are your video frame to analyze in order from frame 1 to frame N:"
+                        },
+                        *[
+                            {
+                                "type": "image_url",
+                                "image_url": {
+                                    "url": f"data:image/png;base64,{frame}"
+                                }
+                            }
+                            for frame in state.current_frame_batch_base64]
                     ]
                 }
             ]
