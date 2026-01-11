@@ -23,11 +23,10 @@ async def analyze_frame(state: ObjectPermanenceWorkflowState) -> dict:
     :rtype: dict
     """
     logger.trace("Entering 'analyze_frame' node.")
-    if not state.current_frame_b64:
-        logger.warning("No frame data in state ('current_frame_b64' is empty). Skipping analysis.")
+    if not state.current_frame_batch_base64:
+        logger.warning("No frame data in state ('current_frame_batch_base64' is empty). Skipping analysis.")
         return {}
 
-    logger.debug(f"Frame has size: {len(state.current_frame_b64)} bytes. Initializing vision model...")
     model = init_pollinations_chat_model(
         Config.POLLINATIONS_VISION_MODEL,
         Config.POLLINATIONS_API_KEY
