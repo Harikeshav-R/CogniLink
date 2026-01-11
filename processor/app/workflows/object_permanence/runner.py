@@ -6,6 +6,24 @@ from app.workflows.object_permanence.workflow import create_compiled_state_graph
 
 
 async def object_permanence_workflow_runner(frame_broadcaster: FrameBroadcaster) -> None:
+    """
+    Executes the object permanence workflow runner using a frame broadcaster.
+
+    This function continuously processes batches of frames obtained from the
+    given `frame_broadcaster` and executes an object permanence workflow. The
+    workflow analyzes objects across frames to maintain state and
+    context information, such as previously analyzed objects and the room
+    scene.
+
+    The runner updates its state after each workflow iteration and maintains
+    consistency of the analyzed data for downstream processing.
+
+    :param frame_broadcaster: A broadcaster source used to fetch frame batches for processing. It provides a subscription mechanism for frame retrieval.
+    :type frame_broadcaster: FrameBroadcaster
+
+    :return: None
+    :rtype: None
+    """
     frames_subscription = frame_broadcaster.subscribe()
     previous_analyzed_objects: list[DetectedObject] = []
     previous_room: str | None = None
@@ -43,9 +61,8 @@ async def object_permanence_workflow_runner(frame_broadcaster: FrameBroadcaster)
 
             logger.success(f"Successfully processed and concluded workflow for frame batch.")
 
-        except BaseException as e:
+        except Exception as e:
             logger.error(
                 f"An unhandled error or cancellation occurred while processing frame batch. Type: {type(e)}, Value: {e}",
                 exc_info=True,
                 backtrace=True)
-            raise e
