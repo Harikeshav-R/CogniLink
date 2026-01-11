@@ -1,11 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AIAssistantCustomInstructionsStorage">
+    <option name="instructions">
+      <map>
+        <entry key="AIAssistant.VCS.GenerateCommitMessage">
+          <value>
+            <AIAssistantStoredInstruction>
+              <option name="actionId" value="AIAssistant.VCS.GenerateCommitMessage" />
+              <option name="content" value="Use the Conventional Commit format. Use bullet points for multiple changes. Do not use markdown formatting." />
+            </AIAssistantStoredInstruction>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="18c77c08-49d5-4319-84e5-ac7b4a92a60e" name="Changes" comment="refactor(shared): simplify FrameBroadcaster by replacing frame-based logic with subscriber queue model">
+    <list default="true" id="18c77c08-49d5-4319-84e5-ac7b4a92a60e" name="Changes" comment="refactor(object_permanence): update input schema to support batch processing&#10;&#10;- Rename `current_frame_b64` to `current_frame_batch_base64` for handling batches of encoded frames.&#10;- Adjust imports for better organization.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../processor/app/workflows/object_permanence/nodes/analyze_frame.py" beforeDir="false" afterPath="$PROJECT_DIR$/../processor/app/workflows/object_permanence/nodes/analyze_frame.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../processor/app/workflows/object_permanence/runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/../processor/app/workflows/object_permanence/runner.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,28 +77,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;object-permanence-batch-processor&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/hari/Developer/CogniLink/orchestrator&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "object-permanence-batch-processor",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "/Users/hari/Developer/CogniLink/orchestrator",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "ml.llm.AIAssistantPromptsLibrary",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -102,6 +118,7 @@
       <workItem from="1767989040506" duration="4278000" />
       <workItem from="1768005112857" duration="31000" />
       <workItem from="1768005163504" duration="2459000" />
+      <workItem from="1768096220069" duration="407000" />
     </task>
     <task id="LOCAL-00001" summary="Update IntelliJ IDEA configuration to include workspace settings, VCS mappings, and database navigator integration">
       <option name="closed" value="true" />
@@ -135,7 +152,23 @@
       <option name="project" value="LOCAL" />
       <updated>1768005198812</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="refactor(shared): enhance FrameBroadcaster with advanced batch retrieval methods and improved logging&#10;&#10;- Replace `print` warnings with `loguru` logger for queue full warnings.&#10;- Introduce `get_strict_batch`, `get_greedy_batch`, and `get_timed_batch` for flexible frame batch retrieval in asyncio queues.">
+      <option name="closed" value="true" />
+      <created>1768096291778</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1768096291778</updated>
+    </task>
+    <task id="LOCAL-00006" summary="refactor(object_permanence): update input schema to support batch processing&#10;&#10;- Rename `current_frame_b64` to `current_frame_batch_base64` for handling batches of encoded frames.&#10;- Adjust imports for better organization.">
+      <option name="closed" value="true" />
+      <created>1768096301551</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1768096301551</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -157,6 +190,8 @@
     <MESSAGE value="refactor(shared): simplify FrameBroadcaster by replacing condition-based frame management with subscriber queue-based broadcasting&#10;&#10;- Add GitToolBox project settings to IntelliJ configuration files." />
     <MESSAGE value="Update IntelliJ IDEA configuration to reflect changes in workspace settings and GitToolBox integration" />
     <MESSAGE value="refactor(shared): simplify FrameBroadcaster by replacing frame-based logic with subscriber queue model" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(shared): simplify FrameBroadcaster by replacing frame-based logic with subscriber queue model" />
+    <MESSAGE value="refactor(shared): enhance FrameBroadcaster with advanced batch retrieval methods and improved logging&#10;&#10;- Replace `print` warnings with `loguru` logger for queue full warnings.&#10;- Introduce `get_strict_batch`, `get_greedy_batch`, and `get_timed_batch` for flexible frame batch retrieval in asyncio queues." />
+    <MESSAGE value="refactor(object_permanence): update input schema to support batch processing&#10;&#10;- Rename `current_frame_b64` to `current_frame_batch_base64` for handling batches of encoded frames.&#10;- Adjust imports for better organization." />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(object_permanence): update input schema to support batch processing&#10;&#10;- Rename `current_frame_b64` to `current_frame_batch_base64` for handling batches of encoded frames.&#10;- Adjust imports for better organization." />
   </component>
 </project>
