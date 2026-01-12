@@ -10,7 +10,7 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True, description="The primary key of the table.")
     first_name: str = Field(index=True, description="The first name of the user.")
     last_name: str = Field(index=True, description="The last name of the user.")
-    face_embedding: Vector = Field(
+    face_embedding: Optional[Vector] = Field(
         sa_column=Column(Vector(4096)), description="The embedding of the user."
     )
 
