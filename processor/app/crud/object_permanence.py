@@ -1,4 +1,5 @@
 from loguru import logger
+from pgvector.sqlalchemy import Vector
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.models.object_permanence import ObjectPermanence
@@ -9,7 +10,7 @@ async def create_object_permanence_entry(
         timestamp: float,
         object_name: str,
         description: str,
-        embedding: list[float]
+        embedding: Vector
 ) -> ObjectPermanence:
     """
     Create a new object permanence log entry in the database.
@@ -26,7 +27,7 @@ async def create_object_permanence_entry(
     :param description: A textual description of the object or its state.
     :type description: str
     :param embedding: A vector representation (embedding) of the object.
-    :type embedding: list[float]
+    :type embedding: pgvector.sqlalchemy.Vector
     :return: The created object permanence database record, including generated fields like ID.
     :rtype: ObjectPermanence
     :raises Exception: If the database transaction fails, the session is rolled back and the exception is re-raised.
