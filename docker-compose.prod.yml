@@ -13,31 +13,15 @@ services:
       timeout: 5s
       retries: 5
 
-  processor:
-    container_name: processor_prod
+  backend:
+    container_name: backend_prod
     build:
-      context: processor
-      target: prod # Use the 'prod' stage from the processor Dockerfile
+      context: backend
+      target: prod # Use the 'prod' stage from the backend Dockerfile
     ports:
       - "8000:8000"
     env_file:
       - .env.prod
-    depends_on:
-      db:
-        condition: service_healthy
-
-  orchestrator:
-    container_name: orchestrator_dev
-    build:
-      context: orchestrator
-      target: dev # Use the 'dev' stage from the orchestrator Dockerfile
-    volumes:
-      - ./orchestrator:/orchestrator # Mount local 'orchestrator' folder into the container
-      - /orchestrator/.venv # Don't mount local .venv, use the one in the container
-    ports:
-      - "8001:8001"
-    env_file:
-      - .env.dev
     depends_on:
       db:
         condition: service_healthy
