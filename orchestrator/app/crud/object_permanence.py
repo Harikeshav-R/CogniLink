@@ -1,11 +1,12 @@
 from loguru import logger
+from pgvector import Vector
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
 from app.models.object_permanence import ObjectPermanence
 
 
-async def read_object_permanence_entries_by_vector_search(db: AsyncSession, query_vector: list[float],
+async def read_object_permanence_entries_by_vector_search(db: AsyncSession, query_vector: Vector,
                                                           limit: int = 10) -> list[
     ObjectPermanence]:
     """
@@ -23,7 +24,7 @@ async def read_object_permanence_entries_by_vector_search(db: AsyncSession, quer
     :param query_vector: The vector used as the basis for similarity
                          comparison. Each value in the list should represent
                          a numerical dimension.
-    :type query_vector: list[float]
+    :type query_vector: pgvector.sqlalchemy.Vector
     :param limit: Maximum number of entries to retrieve from the query result.
                   Defaults to 10 if not specified.
     :type limit: int
@@ -32,7 +33,7 @@ async def read_object_permanence_entries_by_vector_search(db: AsyncSession, quer
     :rtype: list[ObjectPermanence]
     """
     logger.info("Executing vector similarity search for ObjectPermanence.")
-    logger.debug("Search parameters - Query vector size: {}, Limit: {}", len(query_vector), limit)
+    logger.debug("Search parameters - Query vector size: {}, Limit: {}", len(query_vector.to_list()), limit)
 
     logger.trace("Constructing SQL statement with cosine distance ordering.")
     statement = select(ObjectPermanence).order_by(

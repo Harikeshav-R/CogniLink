@@ -10,5 +10,5 @@ class ObjectPermanence(SQLModel, table=True):
 
     object_name: str = Field(..., description="Name of the object (e.g., 'Black Car Keys').")
     description: str = Field(..., description="Natural language description of the object.")
-    embedding: list[float] = Field(sa_column=Column(Vector(3072)),
-                                   description="The embedding of the natural language description of the object.")
+    embedding: Vector = Field(sa_column=Column(Vector(3072)),
+                              description="The embedding of the natural language description of the object.")
